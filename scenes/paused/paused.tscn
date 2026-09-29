@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://cko02oljhiby"]
 
-[ext_resource type="Script" path="res://paused/paused.gd" id="1_n0tpy"]
-[ext_resource type="Script" path="res://paused/options.gd" id="2_iq4em"]
+[ext_resource type="Script" path="res://scripts/paused/paused.gd" id="1_n0tpy"]
+[ext_resource type="Script" path="res://scripts/paused/options.gd" id="2_iq4em"]
 
 [node name="Paused" type="Control"]
 process_mode = 2
