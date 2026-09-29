@@ -12,14 +12,14 @@ config_version=5
 
 config/name="Godot Skeleton"
 config/description="[Add your description here!]"
-run/main_scene="res://main_menu/main_menu.tscn"
+run/main_scene="res://scenes/main_menu/main_menu.tscn"
 config/features=PackedStringArray("4.0", "Mobile")
 config/icon="res://assets/icon.svg"
 
 [autoload]
 
-Global="*res://global.gd"
-Sound="*res://sound.gd"
+Global="*res://scripts/global.gd"
+Sound="*res://scripts/sound.gd"
 
 [display]
 
