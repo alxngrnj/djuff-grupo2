@@ -1,12 +1,7 @@
-
 [gd_scene format=3 uid="uid://cv830nvsg2o4q"]
 
-[ext_resource type="Script" path="res://scripts/player.gd" id="1_onrkg"]
-[ext_resource type="Texture2D" path="res://assets/mystic_woods_free_2.2/sprites/characters/player.png" id="2_i3pqv"]
-
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_8ct2n"]
-size = Vector2(33, 37)
+[ext_resource type="Script" uid="uid://crqvie1spn8na" path="res://scripts/player.gd" id="1_onrkg"]
+[ext_resource type="Texture2D" uid="uid://dvnjs2x5lugaa" path="res://assets/mystic_woods_free_2.2/sprites/characters/player.png" id="2_i3pqv"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_gc2f6"]
 atlas = ExtResource("2_i3pqv")
@@ -418,14 +413,21 @@ animations = [{
 "speed": 5.0
 }]
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_g2els"]
+radius = 5.0
+
 [node name="player" type="CharacterBody2D" unique_id=1977929669]
+y_sort_enabled = true
 script = ExtResource("1_onrkg")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=421630437]
-position = Vector2(1.5, 5.5)
-shape = SubResource("RectangleShape2D_8ct2n")
-
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1769259514]
+position = Vector2(0, -1)
+scale = Vector2(1.0208334, 0.9791667)
 sprite_frames = SubResource("SpriteFrames_8oqth")
 animation = &"front_walk"
 frame_progress = 0.6389317
+offset = Vector2(0, -15)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=421630437]
+position = Vector2(1, -2)
+shape = SubResource("CircleShape2D_g2els")
