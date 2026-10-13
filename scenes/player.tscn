@@ -1,7 +1,9 @@
-[gd_scene format=3 uid="uid://crve08cn5mgpd"]
 
-[ext_resource type="Script" uid="uid://crqvie1spn8na" path="res://scripts/player.gd" id="1_onrkg"]
-[ext_resource type="Texture2D" uid="uid://dvnjs2x5lugaa" path="res://assets/mystic_woods_free_2.2/sprites/characters/player.png" id="2_i3pqv"]
+[gd_scene format=3 uid="uid://cv830nvsg2o4q"]
+
+[ext_resource type="Script" path="res://scripts/player.gd" id="1_onrkg"]
+[ext_resource type="Texture2D" path="res://assets/mystic_woods_free_2.2/sprites/characters/player.png" id="2_i3pqv"]
+
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_8ct2n"]
 size = Vector2(33, 37)
