@@ -2,8 +2,17 @@ extends CanvasLayer
 
 @onready var dialogue_box: Control = $DialogueBox
 @onready var dialogue_text: Label = $DialogueBox/DialogueText
+@onready var name_text: Label = $DialogueBox/NameText
 
-# Dialogos de cada personagem
+#nome dos personagens; substituir depois
+var character_names = {
+	"Lena" : "Lena",
+	"P1" : "Personagem 1",
+	"P2" : "Personagem 2",
+	"P3" : "Personagem 3"
+}
+
+# Dialogos de cada personagem; adicionar dialogos aqui
 var character_dialogues = {
 	"Lena" : [
 		"Frase Lena"
@@ -18,35 +27,38 @@ var character_dialogues = {
 		"Frase P3"
 	]
 }
+
 var dialogue_lines = []
 var current_line_index: int = 0 #indica o dialogo atual
 var is_dialogue_active: bool = false 
 
 func _ready() -> void:
-	dialogue_box.visible = false 
+	dialogue_box.visible = false #caixa de texto invisível de inicio.
 	
-	start_dialogue("P1")
+	start_dialogue("P1") #teste de dialogo.
 
 func start_dialogue(character_id: String) -> void: #envia como parametro o personagem selecionado na cena
-	get_tree().paused = true
+	get_tree().paused = true #pausa o jogo enquanto o dialogo acontece
 	dialogue_lines = character_dialogues[character_id]
+	
+	name_text.text = character_names.get(character_id, character_id)
 	
 	current_line_index = 0
 	is_dialogue_active = true
-	dialogue_box.visible = true
-	dialogue_text.text = dialogue_lines[current_line_index]
+	dialogue_box.visible = true #caixa de texto aparece
+	dialogue_text.text = dialogue_lines[current_line_index] 
 	
 func _input(event):
-	if not is_dialogue_active:
+	if not is_dialogue_active: #verifica se o dialogo está ativo
 		return
-	if event.is_action_pressed("ui_accept"):
-		advance_dialogue()
+	if event.is_action_pressed("ui_accept"): #se estiver ativo, espera o jogador apertar ENTER
+		advance_dialogue() 
 		
 func advance_dialogue():
 	if current_line_index < dialogue_lines.size() - 1:
 		current_line_index += 1
 		dialogue_text.text = dialogue_lines[current_line_index]
 	else:
-		get_tree().paused = false
-		is_dialogue_active = false
-		dialogue_box.visible = false
+		get_tree().paused = false #despausa o jogo
+		is_dialogue_active = false 
+		dialogue_box.visible = false #caixa de texto desaparece

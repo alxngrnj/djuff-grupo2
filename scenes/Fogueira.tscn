@@ -3,7 +3,11 @@
 [ext_resource type="Script" uid="uid://bmh7rnju5ttam" path="res://scripts/dialogue_manager.gd" id="1_url2g"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_3sytw"]
+font_size = 28
+
+[sub_resource type="LabelSettings" id="LabelSettings_nibba"]
 font_size = 32
+font_color = Color(1, 1, 0.38039216, 1)
 
 [node name="Fogueira" type="Node2D" unique_id=1613490273]
 
@@ -46,10 +50,18 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_top = 45.0
 grow_horizontal = 2
 grow_vertical = 2
 text = "Dialogue Text"
 label_settings = SubResource("LabelSettings_3sytw")
 autowrap_mode = 3
+
+[node name="NameText" type="Label" parent="DialogueManager/DialogueBox" unique_id=1783447703]
+layout_mode = 1
+offset_right = 40.0
+offset_bottom = 23.0
+text = "Personagem"
+label_settings = SubResource("LabelSettings_nibba")
 
 [node name="SceneManager" type="Node" parent="." unique_id=467625782]
