@@ -1,12 +1,12 @@
-[gd_scene load_steps=6 format=3 uid="uid://j87n4lychbt5"]
+[gd_scene format=3 uid="uid://j87n4lychbt5"]
 
-[ext_resource type="Script" path="res://scripts/main_menu/version_label.gd" id="1_5huni"]
+[ext_resource type="Script" uid="uid://cv6osrygr751o" path="res://scripts/main_menu/version_label.gd" id="1_5huni"]
 [ext_resource type="PackedScene" uid="uid://bdnyglk1i1cxl" path="res://scenes/gameplay/gameplay.tscn" id="2_5nvqq"]
-[ext_resource type="Script" path="res://scripts/main_menu/menu_options.gd" id="2_gpv3d"]
+[ext_resource type="Script" uid="uid://bl01322k2t7hi" path="res://scripts/main_menu/menu_options.gd" id="2_gpv3d"]
 [ext_resource type="PackedScene" uid="uid://dpicmplffpula" path="res://scenes/settings/settings.tscn" id="3_2osu0"]
 [ext_resource type="PackedScene" uid="uid://cee5dna3u27jf" path="res://scenes/assets/select_sfx.tscn" id="4_82nwe"]
 
-[node name="MainMenu" type="Control"]
+[node name="MainMenu" type="Control" unique_id=40507463]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -14,7 +14,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="BG" type="ColorRect" parent="."]
+[node name="BG" type="ColorRect" parent="." unique_id=1319956176]
 layout_mode = 0
 offset_left = -34.0
 offset_top = -28.0
@@ -22,7 +22,7 @@ offset_right = 1318.0
 offset_bottom = 758.0
 color = Color(0.227451, 0.368627, 0.521569, 1)
 
-[node name="Title" type="Label" parent="."]
+[node name="Title" type="Label" parent="." unique_id=1059600816]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -36,7 +36,7 @@ theme_type_variation = &"HeaderLarge"
 text = "YOUR GAME"
 horizontal_alignment = 1
 
-[node name="Credit" type="Label" parent="."]
+[node name="Credit" type="Label" parent="." unique_id=1519769652]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -48,7 +48,7 @@ offset_bottom = 182.0
 grow_horizontal = 2
 text = "A game by YOU"
 
-[node name="Controls" type="Label" parent="."]
+[node name="Controls" type="Label" parent="." unique_id=350098711]
 layout_mode = 0
 offset_left = 843.0
 offset_top = 573.0
@@ -60,7 +60,7 @@ Move: Arrow Keys | Accept: Z | Cancel: Z | Pause: Esc
 Gamepads work too!"
 horizontal_alignment = 2
 
-[node name="Instructions" type="Label" parent="."]
+[node name="Instructions" type="Label" parent="." unique_id=2126603546]
 layout_mode = 0
 offset_left = 54.0
 offset_top = 570.0
@@ -69,7 +69,7 @@ offset_bottom = 674.0
 text = "INSTRUCTIONS
 Collect all the things!"
 
-[node name="Version" type="Label" parent="."]
+[node name="Version" type="Label" parent="." unique_id=441643436]
 layout_mode = 0
 offset_left = 1060.0
 offset_top = 20.0
@@ -79,7 +79,7 @@ text = "Version: [set dynamically]"
 horizontal_alignment = 2
 script = ExtResource("1_5huni")
 
-[node name="DebugUIStatus" type="Label" parent="." groups=["debug_ui"]]
+[node name="DebugUIStatus" type="Label" parent="." unique_id=1769442231 groups=["debug_ui"]]
 visible = false
 layout_mode = 0
 offset_left = 24.0
@@ -88,7 +88,7 @@ offset_right = 162.0
 offset_bottom = 49.0
 text = "Debug UI enabled"
 
-[node name="MenuOptions" type="VFlowContainer" parent="." node_paths=PackedStringArray("shortcut_context")]
+[node name="MenuOptions" type="VFlowContainer" parent="." unique_id=1005807653 node_paths=PackedStringArray("shortcut_context")]
 layout_mode = 1
 anchors_preset = 13
 anchor_left = 0.5
@@ -106,19 +106,19 @@ script = ExtResource("2_gpv3d")
 gameplay_scene = ExtResource("2_5nvqq")
 settings_scene = ExtResource("3_2osu0")
 
-[node name="Start" type="Button" parent="MenuOptions"]
+[node name="Start" type="Button" parent="MenuOptions" unique_id=1943695896]
 layout_mode = 2
 text = "Start"
 
-[node name="Settings" type="Button" parent="MenuOptions"]
+[node name="Settings" type="Button" parent="MenuOptions" unique_id=2091879403]
 layout_mode = 2
 text = "Settings"
 
-[node name="Quit" type="Button" parent="MenuOptions"]
+[node name="Quit" type="Button" parent="MenuOptions" unique_id=1771303748]
 layout_mode = 2
 text = "Quit"
 
-[node name="SelectSfx" parent="MenuOptions" instance=ExtResource("4_82nwe")]
+[node name="SelectSfx" parent="MenuOptions" unique_id=820039607 instance=ExtResource("4_82nwe")]
 
 [connection signal="pressed" from="MenuOptions/Start" to="MenuOptions" method="_on_start_pressed"]
 [connection signal="pressed" from="MenuOptions/Settings" to="MenuOptions" method="_on_settings_pressed"]
