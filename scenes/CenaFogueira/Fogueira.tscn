@@ -1,0 +1,122 @@
+[gd_scene format=3 uid="uid://brgnytpxaenot"]
+
+[ext_resource type="Script" uid="uid://dxyf0q58ad2mj" path="res://scenes/CenaFogueira/scripts/fogueira.gd" id="1_b8aap"]
+[ext_resource type="Texture2D" uid="uid://ca3rirexy4cuv" path="res://scenes/CenaFogueira/sprites/icones/f.png" id="2_b8aap"]
+[ext_resource type="Texture2D" uid="uid://biu3eoq5csvh1" path="res://scenes/CenaFogueira/sprites/icones/a.png" id="3_r6xa7"]
+[ext_resource type="Texture2D" uid="uid://c0epefyn3eivq" path="res://scenes/CenaFogueira/sprites/icones/s.png" id="4_sbdmr"]
+[ext_resource type="Texture2D" uid="uid://ciw6ne1tcmele" path="res://scenes/CenaFogueira/sprites/icones/d.png" id="5_dw1ew"]
+[ext_resource type="Script" uid="uid://bmh7rnju5ttam" path="res://scenes/CenaFogueira/scripts/dialogue_manager.gd" id="6_r6xa7"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_3sytw"]
+font_size = 28
+
+[sub_resource type="LabelSettings" id="LabelSettings_nibba"]
+font_size = 32
+font_color = Color(1, 1, 0.38039216, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_twkuq"]
+font_size = 22
+outline_size = 6
+outline_color = Color(0, 0, 0, 1)
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_b8aap"]
+load_path = "res://.godot/imported/enter-icon_md.png-d0fc68682fbfcc2cd76bda165ae0e5d9.ctex"
+
+[node name="Fogueira" type="Node2D" unique_id=1613490273]
+script = ExtResource("1_b8aap")
+
+[node name="Characters" type="Node2D" parent="." unique_id=470153797]
+
+[node name="Lena" type="Node2D" parent="Characters" unique_id=1578130546]
+
+[node name="SpriteInputLena" type="Sprite2D" parent="Characters/Lena" unique_id=1996294517]
+position = Vector2(1030, 250)
+texture = ExtResource("2_b8aap")
+
+[node name="P1" type="Node2D" parent="Characters" unique_id=1496817901]
+
+[node name="SpriteInputP1" type="Sprite2D" parent="Characters/P1" unique_id=1623446425]
+position = Vector2(250, 250)
+texture = ExtResource("3_r6xa7")
+
+[node name="P2" type="Node2D" parent="Characters" unique_id=1058945730]
+
+[node name="SpriteInputP2" type="Sprite2D" parent="Characters/P2" unique_id=256860269]
+position = Vector2(500, 150)
+texture = ExtResource("4_sbdmr")
+
+[node name="P3" type="Node2D" parent="Characters" unique_id=1196046544]
+
+[node name="SpriteInputP3" type="Sprite2D" parent="Characters/P3" unique_id=1178320582]
+position = Vector2(780, 150)
+texture = ExtResource("5_dw1ew")
+
+[node name="DialogueManager" type="CanvasLayer" parent="." unique_id=850391585]
+process_mode = 3
+script = ExtResource("6_r6xa7")
+
+[node name="DialogueBox" type="Control" parent="DialogueManager" unique_id=360868844]
+custom_minimum_size = Vector2(0, 200)
+custom_maximum_size = Vector2(800, -1)
+layout_mode = 3
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="ColorRect" type="ColorRect" parent="DialogueManager/DialogueBox" unique_id=574520825]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.19607843)
+
+[node name="DialogueText" type="Label" parent="DialogueManager/DialogueBox" unique_id=1204959010]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 13.0
+offset_top = 45.0
+offset_right = -12.0
+offset_bottom = -12.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Dialogue Text"
+label_settings = SubResource("LabelSettings_3sytw")
+autowrap_mode = 3
+
+[node name="NameText" type="Label" parent="DialogueManager/DialogueBox" unique_id=1783447703]
+layout_mode = 1
+offset_left = 13.0
+offset_right = 206.0
+offset_bottom = 45.0
+text = "Personagem"
+label_settings = SubResource("LabelSettings_nibba")
+
+[node name="SceneManager" type="Node" parent="." unique_id=467625782]
+
+[node name="EncerrarCena" type="Label" parent="." unique_id=574221913]
+offset_top = 545.0
+offset_right = 1280.0
+offset_bottom = 720.0
+text = "ENCERRAR CONVERSA"
+label_settings = SubResource("LabelSettings_twkuq")
+horizontal_alignment = 1
+
+[node name="Sprite2D" type="Sprite2D" parent="EncerrarCena" unique_id=654874833]
+position = Vector2(640, 55)
+scale = Vector2(0.671875, 0.671875)
+texture = SubResource("CompressedTexture2D_b8aap")
+
+[node name="Control" type="Control" parent="." unique_id=1013078406]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2

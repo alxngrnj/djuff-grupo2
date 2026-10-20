@@ -35,7 +35,6 @@ var is_dialogue_active: bool = false
 func _ready() -> void:
 	dialogue_box.visible = false #caixa de texto invisível de inicio.
 	
-	start_dialogue("P1") #teste de dialogo.
 
 func start_dialogue(character_id: String) -> void: #envia como parametro o personagem selecionado na cena
 	get_tree().paused = true #pausa o jogo enquanto o dialogo acontece
@@ -49,9 +48,11 @@ func start_dialogue(character_id: String) -> void: #envia como parametro o perso
 	dialogue_text.text = dialogue_lines[current_line_index] 
 	
 func _input(event):
+	#dialogo não está ativado
 	if not is_dialogue_active: #verifica se o dialogo está ativo
 		return
-	if event.is_action_pressed("ui_accept"): #se estiver ativo, espera o jogador apertar ENTER
+	#se estiver ativo, espera o jogador apertar o botão esquerdo do mouse para passar a fala
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		advance_dialogue() 
 		
 func advance_dialogue():
