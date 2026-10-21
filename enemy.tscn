@@ -1,7 +1,7 @@
 
 [gd_scene format=3 uid="uid://cbxxf7nhljxd1"]
 
-[gd_scene format=3 uid="uid://bvpmo81sktdaa"]
+
 
 
 [ext_resource type="Script" uid="uid://dys4kj25y0150" path="res://enemy.gd" id="1_4gyqm"]

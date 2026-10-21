@@ -5,7 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://bb2l6jx4auef3" path="res://assets/mystic_woods_free_2.2/sprites/objects/objects.png" id="3_71j4m"]
 [ext_resource type="PackedScene" uid="uid://cv830nvsg2o4q" path="res://scenes/player.tscn" id="4_k0juu"]
 [ext_resource type="PackedScene" uid="uid://cbxxf7nhljxd1" path="res://enemy.tscn" id="5_71j4m"]
-[ext_resource type="PackedScene" uid="uid://bvpmo81sktdaa" path="res://enemy.tscn" id="5_71j4m"]
+[ext_resource type="PackedScene" uid="uid://cbxxf7nhljxd1" path="res://enemy.tscn" id="5_71j4m"]
 
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_qfnet"]
