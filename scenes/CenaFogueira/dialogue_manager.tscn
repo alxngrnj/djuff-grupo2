@@ -1,0 +1,59 @@
+[gd_scene format=3 uid="uid://p5wa6sh0aq3p"]
+
+[ext_resource type="Script" uid="uid://bmh7rnju5ttam" path="res://scenes/CenaFogueira/scripts/dialogue_manager.gd" id="1_s0r3w"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_3sytw"]
+font_size = 28
+
+[sub_resource type="LabelSettings" id="LabelSettings_nibba"]
+font_size = 32
+font_color = Color(1, 1, 0.38039216, 1)
+
+[node name="DialogueManager" type="CanvasLayer" unique_id=427966373]
+process_mode = 3
+script = ExtResource("1_s0r3w")
+
+[node name="DialogueBox" type="Control" parent="." unique_id=1527316824]
+custom_minimum_size = Vector2(0, 200)
+custom_maximum_size = Vector2(800, -1)
+layout_mode = 3
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="ColorRect" type="ColorRect" parent="DialogueBox" unique_id=218759991]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.19607843)
+
+[node name="DialogueText" type="Label" parent="DialogueBox" unique_id=313578052]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 13.0
+offset_top = 45.0
+offset_right = -12.0
+offset_bottom = -12.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Dialogue Text"
+label_settings = SubResource("LabelSettings_3sytw")
+autowrap_mode = 3
+clip_text = true
+max_lines_visible = 3
+
+[node name="NameText" type="Label" parent="DialogueBox" unique_id=232164393]
+layout_mode = 1
+offset_left = 13.0
+offset_right = 206.0
+offset_bottom = 45.0
+text = "Personagem"
+label_settings = SubResource("LabelSettings_nibba")
