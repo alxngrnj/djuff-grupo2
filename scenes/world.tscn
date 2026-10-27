@@ -5,8 +5,6 @@
 [ext_resource type="Texture2D" uid="uid://bb2l6jx4auef3" path="res://assets/mystic_woods_free_2.2/sprites/objects/objects.png" id="3_71j4m"]
 [ext_resource type="PackedScene" uid="uid://cv830nvsg2o4q" path="res://scenes/player.tscn" id="4_k0juu"]
 [ext_resource type="PackedScene" uid="uid://cbxxf7nhljxd1" path="res://enemy.tscn" id="5_71j4m"]
-[ext_resource type="PackedScene" uid="uid://cbxxf7nhljxd1" path="res://enemy.tscn" id="5_71j4m"]
-
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_qfnet"]
 texture = ExtResource("1_4wyf3")
@@ -103,8 +101,6 @@ tile_set = SubResource("TileSet_jg4xt")
 [node name="player" parent="TileMap/ysort" unique_id=1977929669 instance=ExtResource("4_k0juu")]
 
 [node name="enemy" parent="TileMap/ysort" unique_id=1806939449 instance=ExtResource("5_71j4m")]
-position = Vector2(200, 23)
 position = Vector2(208, 27)
-
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1781344732]
 position = Vector2(102, 33)
