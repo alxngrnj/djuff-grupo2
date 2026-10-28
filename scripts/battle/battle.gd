@@ -8,7 +8,8 @@ extends Node
 ## PARTY: são 4 personagens (PlayerData.party_data), um por botão. O botão A é do
 ## personagem 1, o B do 2, o X do 3 e o Y do 4; o ataque de cada um é a ação que
 ## está naquele botão. Em cada rodada cada personagem age UMA vez, na ordem que
-## você apertar. Depois que todos agiram, é a vez dos inimigos.
+## você apertar. A cada ataque de um personagem, UM inimigo ataca um personagem
+## sorteado, e assim por diante (os inimigos se revezam).
 ##
 ## Tudo é montado por código; a cena battle.tscn só tem este script.
 
@@ -32,6 +33,21 @@ const SLIME_ANIMS := {
 	"move": [4, 6, 10.0, true],
 	"attack": [7, 7, 10.0, false],
 	"hurt": [10, 3, 8.0, false],
+	"death": [12, 5, 8.0, false],
+}
+
+# Aliados olham para CIMA (de costas para a tela) e inimigos para BAIXO (de frente).
+const PLAYER_ANIMS_UP := {
+	"idle": [2, 6, 6.0, true],
+	"move": [5, 6, 12.0, true],
+	"attack": [8, 4, 8.0, false],
+	"death": [9, 3, 5.0, false],
+}
+const SLIME_ANIMS_DOWN := {
+	"idle": [0, 4, 6.0, true],
+	"move": [3, 6, 10.0, true],
+	"attack": [6, 7, 10.0, false],
+	"hurt": [9, 3, 8.0, false],
 	"death": [12, 5, 8.0, false],
 }
 
@@ -152,7 +168,7 @@ func _run_battle() -> void:
 func _intro() -> void:
 	_fade_rect.modulate.a = 1.0
 	for e in enemies:
-		e.position.x = _vp.x + 30.0
+		e.position.y = -40.0
 	_fade(0.0, 0.4)
 	for e in enemies:
 		e.move_to(e.home_position, 0.6)
@@ -289,7 +305,7 @@ func _do_jump(action: BattleAction) -> void:
 	var target := _selected_enemy()
 	if target == null:
 		return
-	await player.move_to(target.position + Vector2(-64.0, 0.0), 0.45)
+	await player.move_to(target.position + Vector2(0.0, 64.0), 0.45)
 	player.hold_pose("attack", 0)
 	var land := target.position + Vector2(0.0, -target.head_height)
 	# Sem await: o pulo acontece enquanto o command espera o aperto.
@@ -307,7 +323,7 @@ func _do_melee(action: BattleAction) -> void:
 	var target := _selected_enemy()
 	if target == null:
 		return
-	await player.move_to(target.position + Vector2(-34.0, 0.0), 0.4)
+	await player.move_to(target.position + Vector2(0.0, 32.0), 0.4)
 	player.play_anim("idle")
 	var result: ActionCommand.Resultado = await _command.timing_barra(1.1, 0.72, 0.045, 0.11)
 	player.play_anim("attack")
@@ -372,14 +388,14 @@ func _enemy_turn() -> void:
 	var e: Battler = alive[_enemy_cursor]
 	_enemy_cursor += 1
 	await _enemy_attack(e)
-	await _wait(0.2)	
+	await _wait(0.2)
 
 
 func _enemy_attack(e: Battler) -> void:
 	var victim: Battler = _pick_victim()
 	if victim == null:
 		return
-	var contact := victim.position + Vector2(26.0, 0.0)
+	var contact := victim.position + Vector2(0.0, -26.0)
 	_command.set_buttons(PlayerData.BUTTONS) # qualquer botão de batalha defende
 	_command.posicao_alerta = e.position + Vector2(0.0, -(e.head_height + 20.0))
 	_command.piscar_alerta(e.data.windup)
@@ -503,7 +519,7 @@ func _fire_projectile(target: Battler) -> void:
 	shot.polygon = points
 	shot.color = Color(1.0, 0.65, 0.15)
 	shot.z_index = 70
-	shot.position = player.position + Vector2(14.0, -player.head_height * 0.6)
+	shot.position = player.position + Vector2(0.0, -player.head_height)
 	_stage.add_child(shot)
 	var end := target.position + Vector2(0.0, -target.head_height * 0.5)
 	var tw := shot.create_tween()
@@ -517,11 +533,11 @@ func _fire_projectile(target: Battler) -> void:
 func _wait(seconds: float) -> void:
 	await get_tree().create_timer(seconds).timeout
 
-## Altura (y) da i-ésima posição de uma coluna com "count" personagens, dentro da área de batalha.
-func _lane_y(i: int, count: int) -> float:
-	var top := _vp.y * 0.22
-	var height := _vp.y * 0.49
-	return top + (i + 0.5) * height / float(count)
+
+## Posição x da i-ésima pessoa de uma fileira de "count", centralizada na tela.
+func _row_x(i: int, count: int, spacing: float) -> float:
+	return _vp.x * 0.5 + (i - (count - 1) / 2.0) * spacing
+
 
 func _alive_party() -> Array[Battler]:
 	var result: Array[Battler] = []
@@ -594,6 +610,7 @@ func _build_layers() -> void:
 	_canvas = CanvasLayer.new()
 	_canvas.layer = 20
 	add_child(_canvas)
+
 	# Chão visto de cima: um gramado na tela inteira, com tufos de grama.
 	var grass := ColorRect.new()
 	grass.color = Color(0.36, 0.64, 0.30)
@@ -607,6 +624,7 @@ func _build_layers() -> void:
 		tuft.size = Vector2(rng.randi_range(4, 9), 2.0)
 		tuft.position = Vector2(rng.randf_range(0.0, _vp.x), rng.randf_range(0.0, _vp.y))
 		_canvas.add_child(tuft)
+
 
 	_stage = Node2D.new()
 	_stage.y_sort_enabled = true
@@ -656,7 +674,8 @@ func _build_hud() -> void:
 		var label := _make_label(slot, "", 11, Color.WHITE, Vector2(9.0, 1.0))
 		var bar_w := width - 16.0
 		var hp_fill := _make_bar(slot, Vector2(9.0, 33.0), bar_w, Color(0.9, 0.25, 0.25))
-		var fp_fill := _make_bar(slot, Vector2(9.0, 40.0), bar_w, Color(0.3, 0.6, 1.0))
+		hp_fill.get_parent().hide() # a vida aparece embaixo do personagem
+		var fp_fill := _make_bar(slot, Vector2(9.0, 35.0), bar_w, Color(0.3, 0.6, 1.0))
 		_slots[btn] = {"panel": slot, "label": label, "hp": hp_fill, "fp": fp_fill}
 
 	_target_label = _make_label(_hud, "", 12, Color.WHITE, Vector2(0.0, _vp.y - slot_h - 28.0))
@@ -731,7 +750,7 @@ func _update_slots() -> void:
 			line2 = action.display_name
 		line2 += "  " + PlayerData.button_hint(btn).split(" / ")[0]
 		if action != null and action.fp_cost > 0:
-			line2 += "  (%d mana)" % action.fp_cost
+			line2 += "  %d mana" % action.fp_cost
 		label.text = "%s%s  %d/%d\n%s" % [head, member.display_name, member.hp, member.max_hp, line2]
 		var acted: bool = i < _acted.size() and _acted[i]
 		var usable := member.is_alive() and not acted and action != null and action.fp_cost <= member.fp
@@ -793,7 +812,7 @@ func _spawn_party() -> void:
 		m.fp = clampi(PlayerData.party_fp[i], 0, d.fp_max)
 		m.defense = PlayerData.defense
 		m.head_height = 21.0
-		m.home_position = Vector2(_vp.x * 0.20 + (i % 2) * 28.0, _lane_y(i, count))
+		m.home_position = Vector2(_row_x(i, count, 100.0), _vp.y * 0.70)
 		m.position = m.home_position
 		_stage.add_child(m)
 
@@ -803,32 +822,34 @@ func _spawn_party() -> void:
 		var tint: Color = d.tint
 		if d.sheet == null:
 			tint = PARTY_TEST_TINTS[i]
-			m.setup_sprite(SpriteSheet.build_frames(sheet, PLAYER_FRAME_SIZE, PLAYER_ANIMS), -19.0, false, tint)
-			m.create_hp_bar(28.0, 3.0) # barrinha de vida embaixo dos pés
-			var name_label := _make_label(m, d.nome, 9, Color.WHITE, Vector2(-30.0, 9.0))
-			name_label.custom_minimum_size = Vector2(60.0, 0.0)
-			name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-			m.hp_changed.connect(_refresh_hud)
-			party.append(m)
+		m.setup_sprite(SpriteSheet.build_frames(sheet, PLAYER_FRAME_SIZE, PLAYER_ANIMS_UP), -19.0, false, tint)
+		m.create_hp_bar(28.0, 3.0) # barrinha de vida embaixo dos pés
+		var name_label := _make_label(m, d.nome, 9, Color.WHITE, Vector2(-30.0, 9.0))
+		name_label.custom_minimum_size = Vector2(60.0, 0.0)
+		name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		m.hp_changed.connect(_refresh_hud)
+		party.append(m)
 	player = party[0]
 
 
 func _spawn_enemies() -> void:
-	var slime_frames := _make_frames(SLIME_TEXTURE, 32, SLIME_ANIMS)
+	var slime_frames := _make_frames(SLIME_TEXTURE, 32, SLIME_ANIMS_DOWN)
 	var count := encounter.enemy_ids.size()
 	for i in count:
 		var data: EnemyData = EnemyDatabase.get_enemy(encounter.enemy_ids[i])
 		var e := Battler.new()
 		e.data = data
 		e.display_name = data.display_name
-		e.max_hp = data.max_hp
-		e.hp = data.max_hp
+		var hp_mult: float = encounter.get_meta("hp_mult", 1.0)
+		var def_bonus: int = encounter.get_meta("defense_bonus", 0)
+		e.max_hp = roundi(data.max_hp * hp_mult)
+		e.hp = e.max_hp
 		e.attack = data.attack
-		e.defense = data.defense
+		e.defense = data.defense + def_bonus
 		e.head_height = 12.0 * data.sprite_scale
-		e.home_position = Vector2(_vp.x * 0.70 + (i % 2) * 28.0, _lane_y(i, count))
+		e.home_position = Vector2(_row_x(i, count, 80.0), _vp.y * 0.27 + (i % 2) * 14.0)
 		e.position = e.home_position
 		_stage.add_child(e)
-		e.setup_sprite(slime_frames, -8.0, true, data.tint, data.sprite_scale)
+		e.setup_sprite(slime_frames, -8.0, false, data.tint, data.sprite_scale)
 		e.create_hp_bar(28.0, -(e.head_height + 8.0))
 		enemies.append(e)

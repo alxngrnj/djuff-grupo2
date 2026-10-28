@@ -6,7 +6,7 @@
 
 [resource]
 script = ExtResource("1_llxn5")
-nome = "Sera"
+nome = "Astra"
 textura = ExtResource("2_sswdf")
 hp_max = 12
 fp_max = 4

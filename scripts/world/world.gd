@@ -23,3 +23,21 @@ func _open_menu() -> void:
 	await menu.closed
 	process_mode = Node.PROCESS_MODE_INHERIT
 	_menu_open = false
+
+var camera: Camera2D
+
+func _ready():
+	camera = get_viewport().get_camera_2d()
+
+	var camada: TileMapLayer = $TileMap/ground
+	var used: Rect2i = camada.get_used_rect()
+
+	var cliff: TileMapLayer = $TileMap/cliff
+	if cliff.get_used_rect().has_area():
+		used = used.merge(cliff.get_used_rect())
+
+	var tam = camada.tile_set.tile_size
+	camera.limit_left   = used.position.x * tam.x
+	camera.limit_top    = used.position.y * tam.y
+	camera.limit_right  = used.end.x * tam.x
+	camera.limit_bottom = used.end.y * tam.y

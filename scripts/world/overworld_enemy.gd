@@ -34,10 +34,16 @@ func _on_body_entered(body: Node2D) -> void:
 	_triggered = true
 	_start_battle.call_deferred() # fora do callback de física
 
+## Multiplicador de vida dos inimigos desta batalha (2.0 = o dobro de vida).
+@export var hp_multiplier: float = 1.0
+## Defesa extra: cada ponto tira 1 de dano dos seus golpes (o dano mínimo continua sendo 1).
+@export var defense_bonus: int = 0
 
 func _start_battle() -> void:
 	var encounter := BattleEncounter.new()
 	encounter.enemy_ids.assign(enemy_ids)
+	encounter.set_meta("hp_mult", hp_multiplier)
+	encounter.set_meta("defense_bonus", defense_bonus)
 	var result: String = await BattleLauncher.start_battle(encounter)
 	if result == "victory":
 		queue_free()
