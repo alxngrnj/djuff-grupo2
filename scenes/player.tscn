@@ -424,8 +424,7 @@ script = ExtResource("1_onrkg")
 position = Vector2(0, -1)
 scale = Vector2(1.0208334, 0.9791667)
 sprite_frames = SubResource("SpriteFrames_8oqth")
-animation = &"front_walk"
-frame_progress = 0.6389317
+animation = &"front_idle"
 offset = Vector2(0, -15)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=421630437]

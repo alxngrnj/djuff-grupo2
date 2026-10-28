@@ -28,6 +28,18 @@ var fp: int = 8
 var attack_bonus: int = 0
 var defense: int = 0
 
+## Os 4 personagens da party (um por botão A/B/X/Y). Se mover os .tres de pasta, ajuste os caminhos.
+const PARTY_PATHS: Array[String] = [
+	"res://player_1.tres",
+	"res://player_2.tres",
+	"res://player_3.tres",
+	"res://player_4.tres",
+]
+
+var party_data: Array[BattlerData] = []
+var party_hp: Array[int] = []
+var party_fp: Array[int] = []
+
 ## Ações que o jogador já desbloqueou (adicione ids aqui ao dar novas habilidades).
 var unlocked_actions: Array[String] = ["jump", "sword", "burst", "heal"]
 
@@ -36,6 +48,7 @@ var slots: Dictionary = {}
 
 
 func _ready() -> void:
+	_load_party()
 	_register_inputs()
 	_set_default_slots()
 	load_loadout()
@@ -141,6 +154,30 @@ func load_loadout() -> void:
 # ---------------------------------------------------------------------------
 func heal_full() -> void:
 	hp = max_hp
+	fp = max_fp
+	for i in party_data.size():
+		party_hp[i] = party_data[i].hp_max
+		party_fp[i] = party_data[i].fp_max
+
+
+## Carrega os 4 BattlerData. Se um arquivo não existir, cria um personagem padrão.
+func _load_party() -> void:
+	party_data.clear()
+	party_hp.clear()
+	party_fp.clear()
+	for i in PARTY_PATHS.size():
+		var d: BattlerData = null
+		if ResourceLoader.exists(PARTY_PATHS[i]):
+			d = load(PARTY_PATHS[i]) as BattlerData
+		if d == null:
+			d = BattlerData.new()
+			d.nome = "Player %d" % (i + 1)
+		party_data.append(d)
+		party_hp.append(d.hp_max)
+		party_fp.append(d.fp_max)
+	max_hp = party_data[0].hp_max
+	hp = max_hp
+	max_fp = party_data[0].fp_max
 	fp = max_fp
 
 

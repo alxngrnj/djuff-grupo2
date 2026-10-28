@@ -5,10 +5,15 @@ extends Node
 ## antes no menu do personagem (PlayerData.slots). No turno do jogador, basta
 ## apertar o botão da ação. Esquerda/direita trocam o alvo.
 ##
+## PARTY: são 4 personagens (PlayerData.party_data), um por botão. O botão A é do
+## personagem 1, o B do 2, o X do 3 e o Y do 4; o ataque de cada um é a ação que
+## está naquele botão. Em cada rodada cada personagem age UMA vez, na ordem que
+## você apertar. Depois que todos agiram, é a vez dos inimigos.
+##
 ## Tudo é montado por código; a cena battle.tscn só tem este script.
 
 signal battle_finished(result: String)
-signal action_chosen(action: BattleAction)
+signal action_chosen(member_index: int)
 
 enum State { BUSY, WAIT_PLAYER }
 
@@ -30,6 +35,16 @@ const SLIME_ANIMS := {
 	"death": [12, 5, 8.0, false],
 }
 
+const PLAYER_FRAME_SIZE := 48
+
+## Cores usadas SÓ enquanto os personagens dividem o mesmo sprite (BattlerData.sheet vazio).
+const PARTY_TEST_TINTS: Array[Color] = [
+	Color(1.0, 1.0, 1.0),
+	Color(1.0, 0.72, 0.72),
+	Color(0.72, 0.85, 1.0),
+	Color(0.75, 1.0, 0.75),
+]
+
 const SWORD_HIT_TIME := 0.125 # frame 1 da animação de ataque a 8 fps
 const FP_REGEN_PER_TURN := 1
 const DEATH_TIME := 0.95
@@ -43,8 +58,13 @@ const BUTTON_COLORS := {
 }
 
 var encounter: BattleEncounter = null
+var party: Array[Battler] = []
+## O personagem que está AGINDO agora (as funções _do_* usam esta variável).
 var player: Battler = null
 var enemies: Array[Battler] = []
+
+var _acted: Array[bool] = [] # quem já agiu nesta rodada
+var _enemy_cursor: int = 0 # qual inimigo ataca a seguir
 
 var _state: State = State.BUSY
 var _target_index: int = 0
@@ -60,10 +80,6 @@ var _cursor: Polygon2D
 var _fade_rect: ColorRect
 var _banner: Label
 var _target_label: Label
-var _hp_label: Label
-var _fp_label: Label
-var _hp_fill: ColorRect
-var _fp_fill: ColorRect
 var _slots: Dictionary = {}
 var _charge_tween: Tween = null
 
@@ -82,7 +98,7 @@ func _ready() -> void:
 	_ground_y = _vp.y * 0.66
 	_build_layers()
 	_build_hud()
-	_spawn_player()
+	_spawn_party()
 	_spawn_enemies()
 	_refresh_hud()
 	_run_battle()
@@ -99,14 +115,36 @@ func _run_battle() -> void:
 	await _intro()
 	var result := "victory"
 	while true:
-		await _player_turn()
-		if _alive_enemies().is_empty():
-			result = "victory"
+		_start_round()
+		var acted_any := false
+		var finished := false
+		while _can_anyone_act():
+			# 1) um personagem ataca
+			var index: int = await _wait_for_action()
+			acted_any = true
+			_acted[index] = true
+			player = party[index]
+			var action: BattleAction = PlayerData.get_action_for(PlayerData.BUTTONS[index])
+			await _execute_action(action)
+			_refresh_hud()
+			if _alive_enemies().is_empty():
+				result = "victory"
+				finished = true
+				break
+			# 2) um inimigo ataca um personagem sorteado
+			await _enemy_turn()
+			if _alive_party().is_empty():
+				result = "defeat"
+				finished = true
+				break
+		if finished:
 			break
-		await _enemy_turn()
-		if not player.is_alive():
-			result = "defeat"
-			break
+		if not acted_any:
+			# Ninguém conseguiu agir (sem mana): um inimigo ataca para o jogo andar.
+			await _enemy_turn()
+			if _alive_party().is_empty():
+				result = "defeat"
+				break
 	await _outro(result)
 	_finish(result)
 
@@ -132,18 +170,22 @@ func _outro(result: String) -> void:
 	_update_slots()
 	_update_target_label()
 	if result == "victory":
-		player.play_anim("idle")
+		for m in _alive_party():
+			m.play_anim("idle")
 		_show_banner("VITÓRIA!", Color.GOLD)
 	else:
-		await player.die(false)
 		_show_banner("DERROTA...", Color(1.0, 0.4, 0.4))
 	await _wait(1.4)
 	await _fade(1.0, 0.4)
 
 
 func _finish(result: String) -> void:
-	PlayerData.hp = player.hp
-	PlayerData.fp = player.fp
+	for i in party.size():
+		PlayerData.party_hp[i] = party[i].hp
+		PlayerData.party_fp[i] = party[i].fp
+	if not party.is_empty():
+		PlayerData.hp = maxi(party[0].hp, 1)
+		PlayerData.fp = party[0].fp
 	Engine.time_scale = 1.0
 	battle_finished.emit(result)
 	if get_tree().current_scene == self:
@@ -156,18 +198,30 @@ func _finish(result: String) -> void:
 # ===========================================================================
 # Turno do jogador
 # ===========================================================================
-func _player_turn() -> void:
-	player.fp = mini(player.fp + FP_REGEN_PER_TURN, player.max_fp)
+func _start_round() -> void:
+	_acted.clear()
+	for m in party:
+		_acted.append(not m.is_alive())
+		if m.is_alive():
+			m.fp = mini(m.fp + FP_REGEN_PER_TURN, m.max_fp)
 	_refresh_hud()
-	var action: BattleAction = await _wait_for_action()
-	await _execute_action(action)
 
 
-func _wait_for_action() -> BattleAction:
+func _can_anyone_act() -> bool:
+	for i in party.size():
+		if _acted[i] or not party[i].is_alive():
+			continue
+		var action: BattleAction = PlayerData.get_action_for(PlayerData.BUTTONS[i])
+		if action != null and action.fp_cost <= party[i].fp:
+			return true
+	return false
+
+
+func _wait_for_action() -> int:
 	_state = State.WAIT_PLAYER
 	_update_slots()
 	_update_target_label()
-	var chosen: BattleAction = await action_chosen
+	var chosen: int = await action_chosen
 	_state = State.BUSY
 	_update_slots()
 	_update_target_label()
@@ -189,17 +243,21 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _try_action(btn: String) -> void:
-	var action: BattleAction = PlayerData.get_action_for(btn)
-	if action == null:
+	var index: int = PlayerData.BUTTONS.find(btn)
+	if index < 0 or index >= party.size():
 		return
-	if action.fp_cost > player.fp:
+	var member: Battler = party[index]
+	var action: BattleAction = PlayerData.get_action_for(btn)
+	if action == null or not member.is_alive() or _acted[index]:
+		return
+	if action.fp_cost > member.fp:
 		_pulse_slot(btn, Color(0.9, 0.2, 0.2))
-		player.float_text("Sem FP!", Color(1.0, 0.5, 0.5))
+		member.float_text("Sem mana!", Color(1.0, 0.5, 0.5))
 		return
 	_current_button = btn
 	_pulse_slot(btn, Color(1.0, 1.0, 0.6))
 	get_viewport().set_input_as_handled()
-	action_chosen.emit(action)
+	action_chosen.emit(index)
 
 
 func _change_target(dir: int) -> void:
@@ -290,9 +348,15 @@ func _do_support(action: BattleAction) -> void:
 	await _wait(0.25)
 	var result: ActionCommand.Resultado = await _command.timing_barra(1.4, 0.7, 0.07, 0.16)
 	var amount := action.power + _bonus(result)
-	player.heal(amount)
-	player.flash(Color(0.5, 1.0, 0.6), 0.5)
-	player.float_text("+%d" % amount, Color(0.5, 1.0, 0.6))
+	# Cura quem usou e, além dele, o aliado com menos vida (se houver outro).
+	var targets: Array[Battler] = [player]
+	var other: Battler = _lowest_hp_ally(player)
+	if other != null:
+		targets.append(other)
+	for m in targets:
+		m.heal(amount)
+		m.flash(Color(0.5, 1.0, 0.6), 0.5)
+		m.float_text("+%d" % amount, Color(0.5, 1.0, 0.6))
 	await _wait(0.7)
 
 
@@ -300,16 +364,22 @@ func _do_support(action: BattleAction) -> void:
 # Turno dos inimigos
 # ===========================================================================
 func _enemy_turn() -> void:
+	var alive := _alive_enemies()
+	if alive.is_empty() or _alive_party().is_empty():
+		return
 	await _wait(0.3)
-	for e in _alive_enemies():
-		if not player.is_alive():
-			break
-		await _enemy_attack(e)
-		await _wait(0.2)
+	_enemy_cursor = posmod(_enemy_cursor, alive.size())
+	var e: Battler = alive[_enemy_cursor]
+	_enemy_cursor += 1
+	await _enemy_attack(e)
+	await _wait(0.2)	
 
 
 func _enemy_attack(e: Battler) -> void:
-	var contact := player.position + Vector2(26.0, 0.0)
+	var victim: Battler = _pick_victim()
+	if victim == null:
+		return
+	var contact := victim.position + Vector2(26.0, 0.0)
 	_command.set_buttons(PlayerData.BUTTONS) # qualquer botão de batalha defende
 	_command.posicao_alerta = e.position + Vector2(0.0, -(e.head_height + 20.0))
 	_command.piscar_alerta(e.data.windup)
@@ -318,14 +388,15 @@ func _enemy_attack(e: Battler) -> void:
 	e.hop_attack(contact)
 	var guard: ActionCommand.Resultado = await _command.defender(e.impact, 0.22, 0.07)
 
-	var damage := maxi(0, e.attack - PlayerData.defense)
+	var damage := maxi(0, e.attack - victim.defense)
 	match guard:
 		ActionCommand.Resultado.PERFEITO:
 			damage = 0
 		ActionCommand.Resultado.BOM:
 			damage = maxi(0, damage - 1)
-	_hit_player(damage, guard)
+	_hit_player(victim, damage, guard)
 	await _hitstop(0.06)
+	_check_party_deaths()
 
 	await _wait(0.25)
 	await e.hop_to(e.home_position, 0.35, 26.0)
@@ -358,19 +429,26 @@ func _hit_enemy(target: Battler, damage: int, result: ActionCommand.Resultado) -
 	_shake(2.0 + damage * 0.6, 0.18)
 
 
-func _hit_player(damage: int, guard: ActionCommand.Resultado) -> void:
+func _hit_player(victim: Battler, damage: int, guard: ActionCommand.Resultado) -> void:
 	if guard == ActionCommand.Resultado.PERFEITO:
-		player.flash(Color(1.0, 1.0, 0.7), 0.3)
-		player.float_text("SUPER GUARDA!", Color(1.0, 0.92, 0.35))
+		victim.flash(Color(1.0, 1.0, 0.7), 0.3)
+		victim.float_text("SUPER GUARDA!", Color(1.0, 0.92, 0.35))
 		_shake(1.5, 0.1)
 		return
-	player.take_damage(damage)
-	player.play_hit()
+	victim.take_damage(damage)
+	victim.play_hit()
 	if guard == ActionCommand.Resultado.BOM:
-		player.float_text("GUARDA -%d" % damage, Color(0.6, 1.0, 0.6))
+		victim.float_text("GUARDA -%d" % damage, Color(0.6, 1.0, 0.6))
 	else:
-		player.float_text("-%d" % damage, Color(1.0, 0.4, 0.4))
+		victim.float_text("-%d" % damage, Color(1.0, 0.4, 0.4))
 	_shake(2.0 + damage * 0.8, 0.2)
+
+
+## Personagens que chegaram a 0 de vida caem (ficam deitados até o fim da batalha).
+func _check_party_deaths() -> void:
+	for m in party:
+		if not m.is_alive() and not m.is_dying:
+			m.die(false)
 
 
 func _resolve_deaths() -> void:
@@ -405,7 +483,7 @@ func _start_charge_effect() -> void:
 	_stop_charge_effect()
 	_charge_tween = create_tween().set_loops()
 	_charge_tween.tween_property(player.sprite, "modulate", Color(1.0, 0.9, 0.3), 0.12)
-	_charge_tween.tween_property(player.sprite, "modulate", Color.WHITE, 0.12)
+	_charge_tween.tween_property(player.sprite, "modulate", player._tint, 0.12)
 
 
 func _stop_charge_effect() -> void:
@@ -413,7 +491,7 @@ func _stop_charge_effect() -> void:
 		_charge_tween.kill()
 		_charge_tween = null
 	if player != null and player.sprite != null:
-		player.sprite.modulate = Color.WHITE
+		player.sprite.modulate = player._tint
 
 
 func _fire_projectile(target: Battler) -> void:
@@ -438,6 +516,41 @@ func _fire_projectile(target: Battler) -> void:
 # ===========================================================================
 func _wait(seconds: float) -> void:
 	await get_tree().create_timer(seconds).timeout
+
+## Altura (y) da i-ésima posição de uma coluna com "count" personagens, dentro da área de batalha.
+func _lane_y(i: int, count: int) -> float:
+	var top := _vp.y * 0.22
+	var height := _vp.y * 0.49
+	return top + (i + 0.5) * height / float(count)
+
+func _alive_party() -> Array[Battler]:
+	var result: Array[Battler] = []
+	for m in party:
+		if m.is_alive():
+			result.append(m)
+	return result
+
+
+## Quem os inimigos atacam: um personagem vivo sorteado.
+func _pick_victim() -> Battler:
+	var alive := _alive_party()
+	if alive.is_empty():
+		return null
+	return alive[randi() % alive.size()]
+
+
+## Aliado vivo com a menor proporção de vida (ignora o personagem "exclude"). Null se não houver.
+func _lowest_hp_ally(exclude: Battler = null) -> Battler:
+	var best: Battler = null
+	var best_ratio := 2.0
+	for m in _alive_party():
+		if m == exclude:
+			continue
+		var ratio := float(m.hp) / float(maxi(m.max_hp, 1))
+		if ratio < best_ratio:
+			best_ratio = ratio
+			best = m
+	return best
 
 
 func _alive_enemies() -> Array[Battler]:
@@ -481,27 +594,19 @@ func _build_layers() -> void:
 	_canvas = CanvasLayer.new()
 	_canvas.layer = 20
 	add_child(_canvas)
-
-	var horizon := _vp.y * 0.42
-	var sky := ColorRect.new()
-	sky.color = Color(0.60, 0.82, 0.94)
-	sky.size = Vector2(_vp.x, horizon)
-	_canvas.add_child(sky)
+	# Chão visto de cima: um gramado na tela inteira, com tufos de grama.
 	var grass := ColorRect.new()
 	grass.color = Color(0.36, 0.64, 0.30)
-	grass.position = Vector2(0.0, horizon)
-	grass.size = Vector2(_vp.x, _vp.y - horizon)
+	grass.size = _vp
 	_canvas.add_child(grass)
-	var edge := ColorRect.new()
-	edge.color = Color(0.25, 0.48, 0.22)
-	edge.position = Vector2(0.0, horizon)
-	edge.size = Vector2(_vp.x, 3.0)
-	_canvas.add_child(edge)
-	var lane := ColorRect.new()
-	lane.color = Color(0.42, 0.70, 0.35)
-	lane.position = Vector2(0.0, _ground_y - 14.0)
-	lane.size = Vector2(_vp.x, 44.0)
-	_canvas.add_child(lane)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 7
+	for i in 70:
+		var tuft := ColorRect.new()
+		tuft.color = Color(0.30, 0.56, 0.25) if i % 2 == 0 else Color(0.42, 0.70, 0.35)
+		tuft.size = Vector2(rng.randi_range(4, 9), 2.0)
+		tuft.position = Vector2(rng.randf_range(0.0, _vp.x), rng.randf_range(0.0, _vp.y))
+		_canvas.add_child(tuft)
 
 	_stage = Node2D.new()
 	_stage.y_sort_enabled = true
@@ -532,35 +637,29 @@ func _build_layers() -> void:
 
 
 func _build_hud() -> void:
-	var panel := ColorRect.new()
-	panel.color = Color(0.0, 0.0, 0.0, 0.55)
-	panel.position = Vector2(6.0, 6.0)
-	panel.size = Vector2(128.0, 46.0)
-	_hud.add_child(panel)
-	_hp_label = _make_label(panel, "", 11, Color.WHITE, Vector2(6.0, 1.0))
-	_hp_fill = _make_bar(panel, Vector2(6.0, 17.0), 116.0, Color(0.9, 0.25, 0.25))
-	_fp_label = _make_label(panel, "", 11, Color.WHITE, Vector2(6.0, 23.0))
-	_fp_fill = _make_bar(panel, Vector2(6.0, 39.0), 116.0, Color(0.3, 0.6, 1.0))
-
-	# Os 4 botões de ação (parte de baixo)
+	# Uma caixa por personagem (parte de baixo): botão, nome, vida, ataque e barras.
 	var count := PlayerData.BUTTONS.size()
 	var gap := 6.0
+	var slot_h := 50.0
 	var width := (_vp.x - 12.0 - gap * (count - 1)) / count
 	for i in count:
 		var btn: String = PlayerData.BUTTONS[i]
 		var slot := ColorRect.new()
-		slot.position = Vector2(6.0 + i * (width + gap), _vp.y - 40.0)
-		slot.size = Vector2(width, 34.0)
+		slot.position = Vector2(6.0 + i * (width + gap), _vp.y - slot_h - 6.0)
+		slot.size = Vector2(width, slot_h)
 		slot.color = SLOT_COLOR
 		_hud.add_child(slot)
 		var strip := ColorRect.new()
 		strip.color = BUTTON_COLORS[btn]
-		strip.size = Vector2(4.0, 34.0)
+		strip.size = Vector2(4.0, slot_h)
 		slot.add_child(strip)
 		var label := _make_label(slot, "", 11, Color.WHITE, Vector2(9.0, 1.0))
-		_slots[btn] = {"panel": slot, "label": label}
+		var bar_w := width - 16.0
+		var hp_fill := _make_bar(slot, Vector2(9.0, 33.0), bar_w, Color(0.9, 0.25, 0.25))
+		var fp_fill := _make_bar(slot, Vector2(9.0, 40.0), bar_w, Color(0.3, 0.6, 1.0))
+		_slots[btn] = {"panel": slot, "label": label, "hp": hp_fill, "fp": fp_fill}
 
-	_target_label = _make_label(_hud, "", 12, Color.WHITE, Vector2(0.0, _vp.y - 60.0))
+	_target_label = _make_label(_hud, "", 12, Color.WHITE, Vector2(0.0, _vp.y - slot_h - 28.0))
 	_target_label.custom_minimum_size = Vector2(_vp.x, 0.0)
 	_target_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 
@@ -603,31 +702,39 @@ func _set_bar(fill: ColorRect, ratio: float) -> void:
 
 
 func _refresh_hud() -> void:
-	if player == null:
+	if party.is_empty():
 		return
-	_hp_label.text = "HP  %d / %d" % [player.hp, player.max_hp]
-	_set_bar(_hp_fill, float(player.hp) / float(maxi(player.max_hp, 1)))
-	_fp_label.text = "FP  %d / %d" % [player.fp, player.max_fp]
-	_set_bar(_fp_fill, float(player.fp) / float(maxi(player.max_fp, 1)))
 	_update_slots()
 
 
 func _update_slots() -> void:
-	for btn: String in PlayerData.BUTTONS:
+	if party.is_empty():
+		return
+	for i in PlayerData.BUTTONS.size():
+		var btn: String = PlayerData.BUTTONS[i]
 		var entry: Dictionary = _slots[btn]
 		var label: Label = entry["label"]
 		var panel: ColorRect = entry["panel"]
-		var action: BattleAction = PlayerData.get_action_for(btn)
-		var head := "[%s] " % PlayerData.button_label(btn)
-		if action == null:
+		var hp_fill: ColorRect = entry["hp"]
+		var fp_fill: ColorRect = entry["fp"]
+		var head := ""
+		if i >= party.size():
 			label.text = head + "-\n" + PlayerData.button_hint(btn)
 			panel.modulate.a = 0.3
 			continue
-		var cost := ""
-		if action.fp_cost > 0:
-			cost = "   %d FP" % action.fp_cost
-		label.text = head + action.display_name + "\n" + PlayerData.button_hint(btn) + cost
-		var usable := player != null and action.fp_cost <= player.fp
+		var member: Battler = party[i]
+		var action: BattleAction = PlayerData.get_action_for(btn)
+		_set_bar(hp_fill, float(member.hp) / float(maxi(member.max_hp, 1)))
+		_set_bar(fp_fill, float(member.fp) / float(maxi(member.max_fp, 1)))
+		var line2 := "-"
+		if action != null:
+			line2 = action.display_name
+		line2 += "  " + PlayerData.button_hint(btn).split(" / ")[0]
+		if action != null and action.fp_cost > 0:
+			line2 += "  (%d mana)" % action.fp_cost
+		label.text = "%s%s  %d/%d\n%s" % [head, member.display_name, member.hp, member.max_hp, line2]
+		var acted: bool = i < _acted.size() and _acted[i]
+		var usable := member.is_alive() and not acted and action != null and action.fp_cost <= member.fp
 		if _state == State.WAIT_PLAYER and usable:
 			panel.modulate.a = 1.0
 		else:
@@ -673,21 +780,37 @@ func _make_frames(texture_path: String, frame_size: int, anims: Dictionary) -> S
 	return SpriteSheet.build_frames(texture, frame_size, anims)
 
 
-func _spawn_player() -> void:
-	player = Battler.new()
-	player.display_name = "Herói"
-	player.is_player = true
-	player.max_hp = PlayerData.max_hp
-	player.hp = clampi(PlayerData.hp, 1, PlayerData.max_hp)
-	player.max_fp = PlayerData.max_fp
-	player.fp = PlayerData.fp
-	player.defense = PlayerData.defense
-	player.head_height = 21.0
-	player.home_position = Vector2(_vp.x * 0.2, _ground_y + 6.0)
-	player.position = player.home_position
-	_stage.add_child(player)
-	player.setup_sprite(_make_frames(PLAYER_TEXTURE, 48, PLAYER_ANIMS), -19.0, false)
-	player.hp_changed.connect(_refresh_hud)
+func _spawn_party() -> void:
+	var count := mini(PlayerData.party_data.size(), PlayerData.BUTTONS.size())
+	for i in count:
+		var d: BattlerData = PlayerData.party_data[i]
+		var m := Battler.new()
+		m.display_name = d.nome
+		m.is_player = true
+		m.max_hp = d.hp_max
+		m.hp = clampi(PlayerData.party_hp[i], 1, d.hp_max) # quem caiu volta com pelo menos 1 de vida
+		m.max_fp = d.fp_max
+		m.fp = clampi(PlayerData.party_fp[i], 0, d.fp_max)
+		m.defense = PlayerData.defense
+		m.head_height = 21.0
+		m.home_position = Vector2(_vp.x * 0.20 + (i % 2) * 28.0, _lane_y(i, count))
+		m.position = m.home_position
+		_stage.add_child(m)
+
+		var sheet: Texture2D = d.sheet
+		if sheet == null:
+			sheet = load(PLAYER_TEXTURE)
+		var tint: Color = d.tint
+		if d.sheet == null:
+			tint = PARTY_TEST_TINTS[i]
+			m.setup_sprite(SpriteSheet.build_frames(sheet, PLAYER_FRAME_SIZE, PLAYER_ANIMS), -19.0, false, tint)
+			m.create_hp_bar(28.0, 3.0) # barrinha de vida embaixo dos pés
+			var name_label := _make_label(m, d.nome, 9, Color.WHITE, Vector2(-30.0, 9.0))
+			name_label.custom_minimum_size = Vector2(60.0, 0.0)
+			name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			m.hp_changed.connect(_refresh_hud)
+			party.append(m)
+	player = party[0]
 
 
 func _spawn_enemies() -> void:
@@ -703,7 +826,7 @@ func _spawn_enemies() -> void:
 		e.attack = data.attack
 		e.defense = data.defense
 		e.head_height = 12.0 * data.sprite_scale
-		e.home_position = Vector2(_vp.x * 0.58 + i * 58.0, _ground_y + 6.0 + (i % 2) * 10.0)
+		e.home_position = Vector2(_vp.x * 0.70 + (i % 2) * 28.0, _lane_y(i, count))
 		e.position = e.home_position
 		_stage.add_child(e)
 		e.setup_sprite(slime_frames, -8.0, true, data.tint, data.sprite_scale)
