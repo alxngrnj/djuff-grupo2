@@ -1,0 +1,106 @@
+[gd_scene format=3 uid="uid://bfwuhoqpeptyb"]
+
+[ext_resource type="Script" uid="uid://cpaypb57qofpu" path="res://scripts/gameplay/lab.gd" id="1_8au1k"]
+[ext_resource type="PackedScene" uid="uid://cv830nvsg2o4q" path="res://scenes/player.tscn" id="2_jb4g5"]
+[ext_resource type="Texture2D" uid="uid://bgprycbqd2tbx" path="res://assets/icon.svg" id="3_icon"]
+[ext_resource type="PackedScene" uid="uid://p5wa6sh0aq3p" path="res://scenes/CenaFogueira/dialogue_manager.tscn" id="4_dialogue"]
+
+[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_8l5cb"]
+distance = -305.0
+
+[node name="Lab" type="Node2D" unique_id=1676310357]
+process_mode = 3
+script = ExtResource("1_8au1k")
+
+[node name="Environment" type="CanvasLayer" parent="." unique_id=643788285]
+
+[node name="Background" type="ColorRect" parent="Environment" unique_id=1010408109]
+visible = false
+offset_right = 1152.0
+offset_bottom = 648.0
+color = Color(0.12, 0.15, 0.2, 1)
+
+[node name="StaticBody2D" type="StaticBody2D" parent="Environment" unique_id=1526004787]
+
+[node name="CollisionShape2D" type="CollisionPolygon2D" parent="Environment/StaticBody2D" unique_id=2143990833]
+polygon = PackedVector2Array(0, 648, 0, 0, 1152, 0, 1152, 648, 960, 384, 192, 384)
+
+[node name="SouthBoundary" type="StaticBody2D" parent="Environment" unique_id=245768202]
+position = Vector2(576, 320)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Environment/SouthBoundary" unique_id=969736130]
+position = Vector2(0, 23)
+shape = SubResource("WorldBoundaryShape2D_8l5cb")
+
+[node name="Interactables" type="Node2D" parent="." unique_id=248607910]
+
+[node name="Computer" type="Sprite2D" parent="Interactables" unique_id=1708356408]
+modulate = Color(0.35, 0.7, 1, 1)
+position = Vector2(344, 408)
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("3_icon")
+metadata/interaction_label = "Computador"
+
+[node name="ComputerLabel" type="Label" parent="Interactables" unique_id=27981414]
+offset_left = 264.0
+offset_top = 440.0
+offset_right = 424.0
+offset_bottom = 470.0
+text = "Computador"
+horizontal_alignment = 1
+
+[node name="Ingredients" type="Sprite2D" parent="Interactables" unique_id=1475598403]
+modulate = Color(0.95, 0.65, 0.25, 1)
+position = Vector2(792.00006, 400)
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("3_icon")
+metadata/interaction_label = "Mesa de ingredientes"
+
+[node name="IngredientsLabel" type="Label" parent="Interactables" unique_id=197942550]
+offset_left = 712.0
+offset_top = 432.0
+offset_right = 878.0
+offset_bottom = 462.0
+text = "Mesa de ingredientes"
+horizontal_alignment = 1
+
+[node name="Portrait" type="Sprite2D" parent="Interactables" unique_id=1891385327]
+modulate = Color(0.8, 0.45, 0.9, 1)
+position = Vector2(264, 560)
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("3_icon")
+metadata/interaction_label = "Porta-retrato"
+
+[node name="PortraitLabel" type="Label" parent="Interactables" unique_id=1951241340]
+offset_left = 176.0
+offset_top = 592.0
+offset_right = 336.0
+offset_bottom = 622.0
+text = "Porta-retrato"
+horizontal_alignment = 1
+
+[node name="Door" type="Sprite2D" parent="Interactables" unique_id=1402285385]
+modulate = Color(0.45, 0.9, 0.45, 1)
+position = Vector2(1040, 496)
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("3_icon")
+metadata/interaction_label = "Porta"
+
+[node name="DoorLabel" type="Label" parent="Interactables" unique_id=1379910448]
+offset_left = 976.0
+offset_top = 504.0
+offset_right = 1136.0
+offset_bottom = 534.0
+text = "Porta"
+horizontal_alignment = 1
+
+[node name="PlayerLena" parent="." unique_id=42786179 instance=ExtResource("2_jb4g5")]
+z_index = 1
+position = Vector2(576, 456)
+scale = Vector2(3, 3)
+speed = 300.0
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1629786265]
+position = Vector2(576, 324)
+
+[node name="DialogueManager" parent="." instance=ExtResource("4_dialogue")]

@@ -5,7 +5,7 @@
 [sub_resource type="CircleShape2D" id="CircleShape2D_trigger"]
 radius = 14.0
 
-[node name="OverworldEnemy" type="Area2D"]
+[node name="OverworldEnemy" type="Area2D" groups=["overworld_enemy"]]
 script = ExtResource("1_enemy")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]

@@ -4,7 +4,6 @@
 [ext_resource type="Texture2D" uid="uid://cijmigowv45c3" path="res://assets/mystic_woods_free_2.2/sprites/tilesets/grass.png" id="2_k0juu"]
 [ext_resource type="Texture2D" uid="uid://bb2l6jx4auef3" path="res://assets/mystic_woods_free_2.2/sprites/objects/objects.png" id="3_71j4m"]
 [ext_resource type="PackedScene" uid="uid://cv830nvsg2o4q" path="res://scenes/player.tscn" id="4_k0juu"]
-[ext_resource type="PackedScene" uid="uid://cbxxf7nhljxd1" path="res://enemy.tscn" id="7_i7141"]
 [ext_resource type="Script" uid="uid://b5u3isik3pe84" path="res://scripts/world/world.gd" id="9_worldscript"]
 [ext_resource type="PackedScene" path="res://scenes/world/overworld_enemy.tscn" id="10_enemyscene"]
 
@@ -78,10 +77,10 @@ sources/1 = SubResource("TileSetAtlasSource_i7141")
 sources/2 = SubResource("TileSetAtlasSource_4mrxx")
 
 [node name="world" type="Node2D" unique_id=578013277]
-y_sort_enabled = true
 script = ExtResource("9_worldscript")
 
 [node name="TileMap" type="TileMap" parent="." unique_id=1742287804]
+y_sort_enabled = true
 tile_set = SubResource("TileSet_jg4xt")
 format = 2
 
@@ -101,15 +100,24 @@ use_parent_material = true
 tile_map_data = PackedByteArray("AAD1//j/AgAAAAUAAAD8//r/AgAAAAUAAAD1/wkAAgAAAAUAAAAEAAoAAgAAAAUAAAASAP3/AgAAAAUAAAAUAAkAAgAAAAUAAAAMAPv/AgAIAAYAAAABAPn/AgAIAAYAAAD4/wYAAgAIAAYAAAD9/woAAgAIAAYAAAAKAAkAAgAIAAYAAAAYAAYAAgAIAAYAAAAZAP3/AgAGAAcAAAAZAAkAAgAGAAcAAAAaAAQAAgAKAAcAAAASAAUAAgAKAAcAAAD8/wgAAgAKAAcAAADz/wAAAgAKAAcAAAAUAP//AgAKAAcAAAD3/wwAAgAKAAcAAAAAAAwAAgAKAAcAAAAZAPj/AgAKAAcAAAASAPf/AgAAAAUAAAAVAPf/AgAGAAcAAAD5////AgAAAAEAAAD///f/AgAAAAEAAAARAAAAAgAAAAEAAAAaAPv/AgAAAAEAAAAaAAwAAgAAAAEAAAAVAAUAAgAAAAEAAAD5/wgAAgAAAAEAAAAaAP7/AgAAAAAAAADy//z/AgAAAAAAAAAGAPn/AgAAAAUAAAAEAP7/AgAAAAUAAAAJAAMAAgAFAAAAAAD+////AgAFAAAAAAATAAAAAgAAAAAAAAD0/wQAAgAGAAcAAAAPAAoAAgAGAAcAAAAIAAAAAgAGAAcAAAD+/wIAAgAGAAcAAAAEAAYAAgAKAAcAAAAMAAsAAgAKAAcAAAAHAAsAAgAGAAcAAAAPAAcAAgAGAAcAAAALAPj/AgAGAAcAAAAJAP3/AgAKAAcAAAD5//v/AgAKAAcAAADt//X/AgAAAAUAAADo//P/AgAAAAUAAADk//T/AgAAAAUAAADu/wYAAgAAAAUAAADn/wIAAgAAAAUAAADn/woAAgAAAAUAAADl//3/AgAIAAYAAADl/wUAAgAIAAYAAADs/wIAAgAIAAYAAADv/woAAgAIAAYAAADx//T/AgAIAAYAAADw//n/AgAGAAcAAADp//b/AgAGAAcAAADp//7/AgAGAAcAAADq/wcAAgAGAAcAAADw/wIAAgAGAAcAAADk/wAAAgAKAAcAAADo/wYAAgAKAAcAAADt/woAAgAKAAcAAADk//v/AgAAAAAAAADj//3/AgAAAAEAAADn////AgAAAAEAAADl/wgAAgAAAAEAAAD7//T/AgAIAAYAAAAHAPT/AgAIAAYAAAD2//T/AgAGAAcAAAABAPT/AgAGAAcAAAAOAPP/AgAGAAcAAAD+//L/AgAAAAUAAAAKAPL/AgAAAAUAAADz//L/AgAAAAUAAAA=")
 tile_set = SubResource("TileSet_jg4xt")
 
-[node name="player" parent="TileMap/ysort" unique_id=1977929669 instance=ExtResource("4_k0juu")]
+[node name="player" parent="TileMap" unique_id=1977929669 instance=ExtResource("4_k0juu")]
 
-[node name="Camera2D" type="Camera2D" parent="TileMap/ysort/player" unique_id=1781344732]
-position = Vector2(102, 33)
+[node name="Camera2D" type="Camera2D" parent="TileMap/player" unique_id=1781344732]
+position = Vector2(0, 0)
+zoom = Vector2(2, 2)
 
-[node name="enemy" parent="TileMap/ysort" unique_id=1806939449 instance=ExtResource("7_i7141")]
-position = Vector2(416, -7)
-enemy_ids = Array[String](["slime_strong2"])
-tint = Color(0.9411765, 0.07058824, 0.07058824, 1)
+[node name="WorldBounds" type="StaticBody2D" parent="." unique_id=1781344733]
+collision_layer = 1
+collision_mask = 1
 
-[node name="OverworldEnemy" parent="TileMap/ysort/enemy" unique_id=1122334455 instance=ExtResource("10_enemyscene")]
+[node name="OverworldEnemy" parent="TileMap" unique_id=1122334455 instance=ExtResource("10_enemyscene")]
 position = Vector2(-352, 31)
+
+[node name="OverworldEnemy2" parent="TileMap" unique_id=812010668 instance=ExtResource("10_enemyscene")]
+position = Vector2(-97, 56)
+enemy_ids = Array[String](["slime_red"])
+hp_multiplier = 1.25
+
+[node name="OverworldEnemy3" parent="TileMap" unique_id=224949013 instance=ExtResource("10_enemyscene")]
+position = Vector2(166, -87)
+enemy_ids = Array[String](["slime"])

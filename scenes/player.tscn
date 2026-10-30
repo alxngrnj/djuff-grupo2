@@ -372,8 +372,10 @@ animations = [{
 radius = 5.0
 
 [node name="player" type="CharacterBody2D" unique_id=1977929669 groups=["player"]]
+motion_mode = 1
 y_sort_enabled = true
 script = ExtResource("1_onrkg")
+speed = 100.0
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1769259514]
 position = Vector2(0, -1)

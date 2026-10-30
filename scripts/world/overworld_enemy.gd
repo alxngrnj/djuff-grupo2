@@ -8,6 +8,8 @@ extends Area2D
 
 @export var enemy_ids: Array[String] = ["slime", "slime_red"]
 
+signal defeated
+
 var _triggered: bool = false
 
 
@@ -46,6 +48,7 @@ func _start_battle() -> void:
 	encounter.set_meta("defense_bonus", defense_bonus)
 	var result: String = await BattleLauncher.start_battle(encounter)
 	if result == "victory":
+		defeated.emit()
 		queue_free()
 	else:
 		_triggered = false

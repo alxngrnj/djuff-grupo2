@@ -13,7 +13,6 @@ outline_size = 6
 outline_color = Color(0, 0, 0, 1)
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_b8aap"]
-load_path = "res://.godot/imported/enter-icon_md.png-d0fc68682fbfcc2cd76bda165ae0e5d9.ctex"
 
 [node name="Fogueira" type="Node2D" unique_id=1613490273]
 script = ExtResource("1_b8aap")
@@ -68,3 +67,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1559289412]
+position = Vector2(576, 324)

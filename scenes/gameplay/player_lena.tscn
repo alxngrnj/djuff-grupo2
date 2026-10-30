@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://dl1tyyel43l4s"]
+
+[ext_resource type="Script" path="res://scripts/gameplay/player_lena.gd" id="1_7ua1y"]
+[ext_resource type="Texture2D" uid="uid://bgprycbqd2tbx" path="res://assets/icon.svg" id="2_xloot"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_topl8"]
+size = Vector2(128, 128)
+
+[node name="PlayerLena" type="CharacterBody2D" unique_id=42786179]
+motion_mode = 1
+script = ExtResource("1_7ua1y")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1653683285]
+shape = SubResource("RectangleShape2D_topl8")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=985296314]
+texture = ExtResource("2_xloot")
