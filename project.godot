@@ -24,6 +24,8 @@ config/icon="res://assets/icon.svg"
 
 Global="*res://scripts/global.gd"
 Sound="*res://scripts/sound.gd"
+PlayerData="*res://scripts/battle/player_data.gd"
+BattleLauncher="*res://scripts/battle/battle_launcher.gd"
 
 [display]
 

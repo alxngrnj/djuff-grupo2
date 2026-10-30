@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BattlerData" format=3 uid="uid://cjjmuyl76e5mv"]
+
+[ext_resource type="Resource" uid="uid://c17m8b4lrxbp6" path="res://atack_espada.tres" id="1_hjig1"]
+[ext_resource type="Script" uid="uid://cv06yo5kw3vld" path="res://scripts/battle/battler_data.gd" id="1_llxn5"]
+[ext_resource type="Texture2D" uid="uid://cqctk8i3ys8r5" path="res://assets/mystic_woods_free_2.2/sprites/characters/sprite_teste.tres" id="2_sswdf"]
+
+[resource]
+script = ExtResource("1_llxn5")
+nome = "Astra"
+textura = ExtResource("2_sswdf")
+hp_max = 12
+fp_max = 4
+ataque = ExtResource("1_hjig1")
+metadata/_custom_type_script = "uid://cv06yo5kw3vld"
