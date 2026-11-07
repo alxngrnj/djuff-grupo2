@@ -3,10 +3,12 @@ extends Node
 @onready var dialogue_manager = $DialogueManager
 @onready var encerrar_cena: Label = $EncerrarCena
 
-@onready var input_lena: Sprite2D = $Characters/Lena/SpriteInputLena
 @onready var input_p1: Sprite2D = $Characters/P1/SpriteInputP1
 @onready var input_p2: Sprite2D = $Characters/P2/SpriteInputP2
 @onready var input_p3: Sprite2D = $Characters/P3/SpriteInputP3
+
+var amigos_conversados: Array[String] = []
+var contador_conversas: Label
 
 #inserir o caminho de "Crafting.tscn" aqui:
 var proxima_cena: String = "null"
@@ -15,6 +17,13 @@ var em_conversas: bool = false
 
 
 func _ready() -> void:
+	contador_conversas = get_node_or_null("ContadorConversas") as Label
+	if contador_conversas == null:
+		contador_conversas = Label.new()
+		contador_conversas.name = "ContadorConversas"
+		contador_conversas.position = Vector2(40, 40)
+		add_child(contador_conversas)
+	atualizar_contador_conversas()
 	show_buttons(true)
 
 
@@ -44,10 +53,6 @@ func _unhandled_input(event: InputEvent) -> void:
 		elif event.keycode == KEY_D:
 			inicializar_conversas("Sera")
 			
-		# F chama Lena
-		elif event.keycode == KEY_F:
-			inicializar_conversas("Lena")
-			
 		# encerra a cena se clicar ENTER
 		elif event.keycode == KEY_ENTER or event.keycode == KEY_KP_ENTER:
 			encerrar_fogueira()
@@ -55,6 +60,10 @@ func _unhandled_input(event: InputEvent) -> void:
 
 #colocar dialogos nessa função
 func inicializar_conversas(id_personagem: String) -> void:
+	if id_personagem in ["Kai", "Sebastiao", "Sera"] and id_personagem not in amigos_conversados:
+		amigos_conversados.append(id_personagem)
+		atualizar_contador_conversas()
+
 	em_conversas = true
 	# Esconde os botoes enquanto um dialogo acontece
 	show_buttons(false)
@@ -73,19 +82,16 @@ func inicializar_conversas(id_personagem: String) -> void:
 		falas = [
 			{"nome": "Sera", "texto": "Suspendisse efficitur risus vel ex mollis, quis dapibus metus cursus. Fusce vitae mauris congue, mattis ante sed, pretium turpis. Donec molestie ultrices tortor aliquet mollis. Aliquam convallis sapien eget auctor condimentum. Duis tempor pellentesque mi quis posuere. Donec ultricies lacus ultrices convallis iaculis. Donec arcu nunc, vestibulum quis suscipit non, commodo vitae erat. "}
 		]
-	elif id_personagem == "Lena":
-		falas = [
-			{"nome": "Lena", "texto": "Phasellus non diam turpis. Phasellus sit amet dui vehicula justo luctus malesuada. Pellentesque non bibendum magna. Nulla ultrices a libero quis vehicula. Donec ac orci non elit molestie elementum a non felis. Phasellus ultricies mollis enim non pulvinar. Pellentesque fermentum varius hendrerit. Cras lacinia eleifend quam, vitae elementum justo scelerisque vitae. Suspendisse potenti. "}
-		]
-
 	#chama a função de iniciar o dialogo em dialogue_manager.gd
 	dialogue_manager.start_dialogue(falas)
 
 
+func atualizar_contador_conversas() -> void:
+	if contador_conversas:
+		contador_conversas.text = "Conversas: %d/3" % amigos_conversados.size()
+
 #quando o dialogo está acontecendo, os botoes desaparecem. A função abaixo os torna visíveis novamente.
 func show_buttons(estado: bool) -> void:
-	if input_lena: 
-		input_lena.visible = estado
 	if input_p1: 
 		input_p1.visible = estado
 	if input_p2: 
@@ -97,6 +103,12 @@ func show_buttons(estado: bool) -> void:
 
 
 func encerrar_fogueira() -> void:
+	if amigos_conversados.is_empty():
+		Global.final_id = 1
+	elif amigos_conversados.size() < 3:
+		Global.final_id = 2
+	else:
+		Global.final_id = 3
 	Global.fogueira_concluida = true
 	#muda para cena de crafting
-	#get_tree().change_scene_to_file(proxima_cena) 
+	get_tree().change_scene_to_file("res://scenes/finais/final_%d.tscn" % Global.final_id)

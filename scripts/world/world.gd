@@ -34,7 +34,7 @@ func _ready():
 
 	camera = $TileMap/player/Camera2D
 
-	var camada: TileMapLayer = $TileMap/ground
+	var camada: TileMapLayer = $ground
 	var used: Rect2i = camada.get_used_rect()
 
 	var cliff: TileMapLayer = $TileMap/cliff

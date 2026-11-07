@@ -1,7 +1,6 @@
 [gd_scene format=3 uid="uid://brgnytpxaenot"]
 
 [ext_resource type="Script" uid="uid://dxyf0q58ad2mj" path="res://scenes/CenaFogueira/scripts/fogueira.gd" id="1_b8aap"]
-[ext_resource type="Texture2D" uid="uid://ca3rirexy4cuv" path="res://scenes/CenaFogueira/sprites/icones/f.png" id="2_b8aap"]
 [ext_resource type="Texture2D" uid="uid://biu3eoq5csvh1" path="res://scenes/CenaFogueira/sprites/icones/a.png" id="3_r6xa7"]
 [ext_resource type="Texture2D" uid="uid://c0epefyn3eivq" path="res://scenes/CenaFogueira/sprites/icones/s.png" id="4_sbdmr"]
 [ext_resource type="Texture2D" uid="uid://ciw6ne1tcmele" path="res://scenes/CenaFogueira/sprites/icones/d.png" id="5_dw1ew"]
@@ -18,12 +17,6 @@ outline_color = Color(0, 0, 0, 1)
 script = ExtResource("1_b8aap")
 
 [node name="Characters" type="Node2D" parent="." unique_id=470153797]
-
-[node name="Lena" type="Node2D" parent="Characters" unique_id=1578130546]
-
-[node name="SpriteInputLena" type="Sprite2D" parent="Characters/Lena" unique_id=1996294517]
-position = Vector2(1030, 250)
-texture = ExtResource("2_b8aap")
 
 [node name="P1" type="Node2D" parent="Characters" unique_id=1496817901]
 
