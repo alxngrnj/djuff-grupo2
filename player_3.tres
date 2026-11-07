@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BattlerData" format=3 uid="uid://61jnaamwyh8r"]
+
+[ext_resource type="Resource" uid="uid://b5i8axmr2n00v" path="res://atack_rajada.tres" id="1_6xe8h"]
+[ext_resource type="Script" uid="uid://cv06yo5kw3vld" path="res://scripts/battle/battler_data.gd" id="1_at7ld"]
+[ext_resource type="Texture2D" uid="uid://cqctk8i3ys8r5" path="res://assets/mystic_woods_free_2.2/sprites/characters/sprite_teste.tres" id="2_n0mxj"]
+
+[resource]
+script = ExtResource("1_at7ld")
+nome = "Kai"
+textura = ExtResource("2_n0mxj")
+hp_max = 9
+fp_max = 9
+ataque = ExtResource("1_6xe8h")
+metadata/_custom_type_script = "uid://cv06yo5kw3vld"

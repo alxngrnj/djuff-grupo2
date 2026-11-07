@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BattlerData" format=3 uid="uid://7n7q416kbe6p"]
+
+[ext_resource type="Resource" uid="uid://cup2tbgsc81u3" path="res://atack_pulo.tres" id="1_lsg3m"]
+[ext_resource type="Script" uid="uid://cv06yo5kw3vld" path="res://scripts/battle/battler_data.gd" id="1_vf5vq"]
+[ext_resource type="Texture2D" uid="uid://bpofcstm14p5o" path="res://assets/mystic_woods_free_2.2/sprites/characters/Lena/Lena idle.png" id="3_lsg3m"]
+
+[resource]
+script = ExtResource("1_vf5vq")
+nome = "Zapan"
+textura = ExtResource("3_lsg3m")
+hp_max = 16
+fp_max = 4
+ataque = ExtResource("1_lsg3m")
+metadata/_custom_type_script = "uid://cv06yo5kw3vld"

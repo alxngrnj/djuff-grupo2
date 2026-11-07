@@ -8,6 +8,7 @@ class_name DialogueManager
 var dialogue_lines: Array = []
 var current_line_index: int = 0 #indica o dialogo atual
 var is_dialogue_active: bool = false 
+var is_interaction_active: bool = false
 
 
 func _ready() -> void:
@@ -31,7 +32,37 @@ func start_dialogue(lines: Array) -> void: #recebe as falas
 	_atualizar_fala() 
 
 
+func show_interaction(title: String, message: String) -> void:
+	dialogue_lines.clear()
+	current_line_index = 0
+	is_dialogue_active = false
+	is_interaction_active = true
+	name_text.text = title
+	dialogue_text.text = message
+	dialogue_text.lines_skipped = 0
+	dialogue_box.visible = true
+	get_tree().paused = true
+
+
+func update_interaction(title: String, message: String) -> void:
+	if not is_interaction_active:
+		return
+	name_text.text = title
+	dialogue_text.text = message
+	dialogue_text.lines_skipped = 0
+
+
+func close_interaction() -> void:
+	if not is_interaction_active:
+		return
+	is_interaction_active = false
+	dialogue_box.visible = false
+	get_tree().paused = false
+
+
 func _unhandled_input(event: InputEvent) -> void:
+	if is_interaction_active:
+		return
 	#dialogo não está ativado
 	if not is_dialogue_active: #verifica se o dialogo está ativo
 		return
