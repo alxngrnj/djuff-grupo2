@@ -30,6 +30,8 @@ extends Node
 
 @export var min_amigos_para_escolha: int = 2
 
+var escala_original: float = 1.0
+
 # Trava os comandos do jogador até a transição inicial terminar
 var intro_concluida: bool = false
 
@@ -51,6 +53,11 @@ var debug_label: Label
 var aguardando_grupo: bool = false
 
 func _ready() -> void:
+	
+	# Escala 1.0 nessa cena
+	escala_original = get_window().content_scale_factor
+	get_window().content_scale_factor = 1.0
+
 	anim_bonfire.play("bonfire")
 	anim_characters.play("default")
 	noise.frequency = 0.1 # Velocidade da tremulação da fogueira
