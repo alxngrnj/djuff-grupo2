@@ -26,10 +26,10 @@ func start_dialogue(lines: Array) -> void: #recebe as falas
 	is_dialogue_active = true
 	
 	dialogue_box.visible = true #caixa de texto aparece
-	get_tree().paused = true #pausa o jogo enquanto o dialogo acontece
+	#get_tree().paused = true #pausa o jogo enquanto o dialogo acontece
 	
 	_atualizar_fala() 
-
+	get_tree().paused = true
 
 func _unhandled_input(event: InputEvent) -> void:
 	#dialogo não está ativado
