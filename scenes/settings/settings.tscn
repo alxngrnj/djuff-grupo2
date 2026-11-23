@@ -1,12 +1,13 @@
-[gd_scene load_steps=6 format=3 uid="uid://dpicmplffpula"]
+[gd_scene format=3 uid="uid://dpicmplffpula"]
 
-[ext_resource type="Script" path="res://scripts/settings/settings_controls.gd" id="1_n5jcg"]
-[ext_resource type="Script" path="res://scripts/settings/fullscreen_toggle.gd" id="2_xaxe3"]
-[ext_resource type="Script" path="res://scripts/settings/sfx_toggle.gd" id="3_ojkp7"]
-[ext_resource type="Script" path="res://scripts/settings/music_toggle.gd" id="4_0gokw"]
-[ext_resource type="Script" path="res://scripts/settings/back_button.gd" id="5_uk7ws"]
+[ext_resource type="Script" uid="uid://cw6n861kvto0m" path="res://scripts/settings/settings_controls.gd" id="1_n5jcg"]
+[ext_resource type="PackedScene" uid="uid://b1uvy13de6svk" path="res://scenes/cutscenes/road/cutscene_transition.tscn" id="1_vghtj"]
+[ext_resource type="Script" uid="uid://cke7hwd814v78" path="res://scripts/settings/fullscreen_toggle.gd" id="2_xaxe3"]
+[ext_resource type="Script" uid="uid://b33i01oop2t6" path="res://scripts/settings/sfx_toggle.gd" id="3_ojkp7"]
+[ext_resource type="Script" uid="uid://copyfo28gvkps" path="res://scripts/settings/music_toggle.gd" id="4_0gokw"]
+[ext_resource type="Script" uid="uid://cr6c2cl4tedya" path="res://scripts/settings/back_button.gd" id="5_uk7ws"]
 
-[node name="Settings" type="Control"]
+[node name="Settings" type="Control" unique_id=2078391892]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -14,15 +15,9 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="BG" type="ColorRect" parent="."]
-layout_mode = 0
-offset_left = -27.0
-offset_top = -25.0
-offset_right = 1300.0
-offset_bottom = 743.0
-color = Color(0.501961, 0.223529, 0.27451, 1)
+[node name="CutsceneTransition" parent="." unique_id=1006589693 instance=ExtResource("1_vghtj")]
 
-[node name="Title" type="Label" parent="."]
+[node name="Title" type="Label" parent="." unique_id=394517004]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -36,7 +31,7 @@ theme_type_variation = &"HeaderLarge"
 text = "Settings"
 horizontal_alignment = 1
 
-[node name="Explainer" type="Label" parent="."]
+[node name="Explainer" type="Label" parent="." unique_id=1978620857]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.500344
@@ -52,7 +47,7 @@ horizontal_alignment = 1
 autowrap_mode = 2
 metadata/_edit_use_anchors_ = true
 
-[node name="SettingsControls" type="VFlowContainer" parent="." node_paths=PackedStringArray("shortcut_context")]
+[node name="SettingsControls" type="VFlowContainer" parent="." unique_id=987145885]
 layout_mode = 1
 anchors_preset = 13
 anchor_left = 0.5
@@ -64,26 +59,25 @@ offset_right = 77.0
 offset_bottom = -9.0
 grow_horizontal = 2
 grow_vertical = 2
-shortcut_context = NodePath("")
 alignment = 1
 script = ExtResource("1_n5jcg")
 
-[node name="FullscreenToggle" type="CheckButton" parent="SettingsControls"]
+[node name="FullscreenToggle" type="CheckButton" parent="SettingsControls" unique_id=2001630634]
 layout_mode = 2
 text = "Fullscreen"
 script = ExtResource("2_xaxe3")
 
-[node name="SfxToggle" type="CheckButton" parent="SettingsControls"]
+[node name="SfxToggle" type="CheckButton" parent="SettingsControls" unique_id=779460682]
 layout_mode = 2
 text = "Sound Effects"
 script = ExtResource("3_ojkp7")
 
-[node name="MusicToggle" type="CheckButton" parent="SettingsControls"]
+[node name="MusicToggle" type="CheckButton" parent="SettingsControls" unique_id=1203347276]
 layout_mode = 2
 text = "Music"
 script = ExtResource("4_0gokw")
 
-[node name="BackButton" type="Button" parent="SettingsControls"]
+[node name="BackButton" type="Button" parent="SettingsControls" unique_id=1980545706]
 layout_mode = 2
 text = "Back"
 script = ExtResource("5_uk7ws")

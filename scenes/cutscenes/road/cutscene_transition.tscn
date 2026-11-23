@@ -1,0 +1,185 @@
+[gd_scene format=3 uid="uid://b1uvy13de6svk"]
+
+[ext_resource type="Texture2D" uid="uid://bov6ked3rf3of" path="res://assets/cutscene/movie_car_9_33__33__33__33.png" id="1_wjh86"]
+[ext_resource type="Script" uid="uid://bdm0yvpwqy34y" path="res://scripts/cutscenes/road/cutscene_transition.gd" id="2_script"]
+[ext_resource type="Texture2D" uid="uid://c1oe1v0wuk5vv" path="res://assets/cutscene/City Landscape/Sky.png" id="3_sky"]
+[ext_resource type="Texture2D" uid="uid://beewd55ruoph1" path="res://assets/cutscene/City Landscape/Buildings 1.png" id="4_buildings1"]
+[ext_resource type="Texture2D" uid="uid://br4urcwh40nfd" path="res://assets/cutscene/City Landscape/Shade 3.png" id="4_g4886"]
+[ext_resource type="Texture2D" uid="uid://bmwgmlb2omr7a" path="res://assets/cutscene/City Landscape/Buildings 2.png" id="5_buildings2"]
+[ext_resource type="Texture2D" uid="uid://co5hv2sqo4cjo" path="res://assets/cutscene/City Landscape/Buildings 3.png" id="6_buildings3"]
+[ext_resource type="Texture2D" uid="uid://dc781v5abj4kr" path="res://assets/cutscene/City Landscape/Shade 2.png" id="7_6j63b"]
+[ext_resource type="Texture2D" uid="uid://c85vrk0u4h04u" path="res://assets/cutscene/City Landscape/Buildings 4.png" id="7_buildings4"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_topl8"]
+atlas = ExtResource("1_wjh86")
+region = Rect2(0, 99.89441, 112, 27.10559)
+
+[node name="CutsceneTransition" type="Node2D" unique_id=1006589693]
+script = ExtResource("2_script")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1158067411]
+position = Vector2(576, 324)
+
+[node name="SkyParallax" type="Parallax2D" parent="." unique_id=1881754817]
+repeat_size = Vector2(1152, 0)
+autoscroll = Vector2(-10, 0)
+repeat_times = 2
+
+[node name="Sky" type="Sprite2D" parent="SkyParallax" unique_id=1976220261]
+position = Vector2(576, 324)
+scale = Vector2(4.608, 4.101)
+texture = ExtResource("3_sky")
+
+[node name="CityBackParallax" type="Parallax2D" parent="." unique_id=952260579]
+scroll_scale = Vector2(0.15, 0)
+scroll_offset = Vector2(-1, -259)
+repeat_size = Vector2(625, 0)
+autoscroll = Vector2(-18, 0)
+repeat_times = 3
+
+[node name="BuildingBack1" type="Sprite2D" parent="CityBackParallax" unique_id=626461344]
+position = Vector2(312, 559)
+scale = Vector2(2.5, 2.5)
+texture = ExtResource("4_buildings1")
+
+[node name="BuildingBack2" type="Sprite2D" parent="CityBackParallax" unique_id=1658513765]
+position = Vector2(937, 559)
+scale = Vector2(2.5, 2.5)
+texture = ExtResource("4_buildings1")
+
+[node name="BuildingBack3" type="Sprite2D" parent="CityBackParallax" unique_id=612913048]
+position = Vector2(1562, 559)
+scale = Vector2(2.5, 2.5)
+texture = ExtResource("4_buildings1")
+
+[node name="ShadeBack" type="Sprite2D" parent="." unique_id=1880197158]
+position = Vector2(584, 423)
+scale = Vector2(4.8, 2.0759494)
+texture = ExtResource("4_g4886")
+
+[node name="CityMiddleParallax" type="Parallax2D" parent="." unique_id=702946553]
+scroll_scale = Vector2(0.35, 0)
+scroll_offset = Vector2(-1, -259)
+repeat_size = Vector2(625, 0)
+autoscroll = Vector2(-42, 0)
+repeat_times = 3
+
+[node name="BuildingMiddle1" type="Sprite2D" parent="CityMiddleParallax" unique_id=1018881111]
+position = Vector2(312, 671)
+scale = Vector2(2.5, 2.5)
+texture = ExtResource("5_buildings2")
+
+[node name="BuildingMiddle2" type="Sprite2D" parent="CityMiddleParallax" unique_id=501627989]
+position = Vector2(937, 671)
+scale = Vector2(2.5, 2.5)
+texture = ExtResource("6_buildings3")
+
+[node name="BuildingMiddle3" type="Sprite2D" parent="CityMiddleParallax" unique_id=2010300815]
+position = Vector2(1562, 671)
+scale = Vector2(2.5, 2.5)
+texture = ExtResource("5_buildings2")
+
+[node name="SpriteFront" type="Sprite2D" parent="." unique_id=2001197273]
+position = Vector2(584, 398.5)
+scale = Vector2(4.736, 1.8037975)
+texture = ExtResource("7_6j63b")
+
+[node name="CityFrontParallax" type="Parallax2D" parent="." unique_id=1493651349]
+scroll_scale = Vector2(0.65, 0)
+scroll_offset = Vector2(-1, -259)
+repeat_size = Vector2(625, 0)
+autoscroll = Vector2(-78, 0)
+repeat_times = 3
+
+[node name="BuildingFront1" type="Sprite2D" parent="CityFrontParallax" unique_id=1673695824]
+position = Vector2(312, 718)
+scale = Vector2(2.5, 2.5)
+texture = ExtResource("7_buildings4")
+
+[node name="BuildingFront2" type="Sprite2D" parent="CityFrontParallax" unique_id=1988896253]
+position = Vector2(937, 718)
+scale = Vector2(2.5, 2.5)
+texture = ExtResource("7_buildings4")
+
+[node name="BuildingFront3" type="Sprite2D" parent="CityFrontParallax" unique_id=1445410867]
+position = Vector2(1562, 718)
+scale = Vector2(2.5, 2.5)
+texture = ExtResource("7_buildings4")
+
+[node name="Road" type="Node2D" parent="." unique_id=429044867]
+
+[node name="Asphalt" type="ColorRect" parent="Road" unique_id=1790428206]
+offset_top = 496.0
+offset_right = 1152.0
+offset_bottom = 689.0
+color = Color(0.12, 0.13, 0.15, 1)
+
+[node name="RoadEdgeTop" type="Line2D" parent="Road" unique_id=733144005]
+position = Vector2(0, 40)
+points = PackedVector2Array(0, 455, 642.019, 455, 1152, 455)
+width = 7.0
+default_color = Color(0.92, 0.92, 0.88, 1)
+
+[node name="LaneMarkers" type="Node2D" parent="Road" unique_id=661249262]
+
+[node name="Marker1" type="ColorRect" parent="Road/LaneMarkers" unique_id=1102656302]
+offset_left = -40.0
+offset_top = 573.0
+offset_right = 80.0
+offset_bottom = 587.0
+color = Color(1, 0.82, 0.05, 1)
+
+[node name="Marker2" type="ColorRect" parent="Road/LaneMarkers" unique_id=1466563090]
+offset_left = 120.0
+offset_top = 573.0
+offset_right = 240.0
+offset_bottom = 587.0
+color = Color(1, 0.82, 0.05, 1)
+
+[node name="Marker3" type="ColorRect" parent="Road/LaneMarkers" unique_id=645758119]
+offset_left = 280.0
+offset_top = 573.0
+offset_right = 400.0
+offset_bottom = 587.0
+color = Color(1, 0.82, 0.05, 1)
+
+[node name="Marker4" type="ColorRect" parent="Road/LaneMarkers" unique_id=975471278]
+offset_left = 440.0
+offset_top = 573.0
+offset_right = 560.0
+offset_bottom = 587.0
+color = Color(1, 0.82, 0.05, 1)
+
+[node name="Marker5" type="ColorRect" parent="Road/LaneMarkers" unique_id=874784264]
+offset_left = 600.0
+offset_top = 573.0
+offset_right = 720.0
+offset_bottom = 587.0
+color = Color(1, 0.82, 0.05, 1)
+
+[node name="Marker6" type="ColorRect" parent="Road/LaneMarkers" unique_id=1214461540]
+offset_left = 760.0
+offset_top = 573.0
+offset_right = 880.0
+offset_bottom = 587.0
+color = Color(1, 0.82, 0.05, 1)
+
+[node name="Marker7" type="ColorRect" parent="Road/LaneMarkers" unique_id=497886419]
+offset_left = 920.0
+offset_top = 573.0
+offset_right = 1040.0
+offset_bottom = 587.0
+color = Color(1, 0.82, 0.05, 1)
+
+[node name="Marker8" type="ColorRect" parent="Road/LaneMarkers" unique_id=1350511756]
+offset_left = 1080.0
+offset_top = 573.0
+offset_right = 1200.0
+offset_bottom = 587.0
+color = Color(1, 0.82, 0.05, 1)
+
+[node name="Car" type="Sprite2D" parent="Road" unique_id=1532650308]
+position = Vector2(232, 512)
+scale = Vector2(3.2, 3.2)
+texture = SubResource("AtlasTexture_topl8")
+flip_h = true
