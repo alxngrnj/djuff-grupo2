@@ -101,6 +101,7 @@ tile_map_data = PackedByteArray("AAD1//j/AgAAAAUAAAD8//r/AgAAAAUAAAD1/wkAAgAAAAU
 tile_set = SubResource("TileSet_jg4xt")
 
 [node name="player" parent="TileMap" unique_id=1977929669 instance=ExtResource("4_k0juu")]
+position = Vector2(-436, -90)
 
 [node name="Camera2D" type="Camera2D" parent="TileMap/player" unique_id=1781344732]
 zoom = Vector2(2, 2)
