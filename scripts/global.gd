@@ -12,6 +12,7 @@ const SETTINGS_FILE := "user://settings.cfg"
 const CONFIG_SETTINGS_SECTION := "settings"
 
 var fogueira_concluida: bool = false
+var final_id: int = 0
 
 func _ready() -> void:
 	print_debug("Global ready")

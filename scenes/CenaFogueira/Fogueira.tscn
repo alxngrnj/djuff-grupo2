@@ -1,7 +1,6 @@
 [gd_scene format=3 uid="uid://brgnytpxaenot"]
 
 [ext_resource type="Script" uid="uid://dxyf0q58ad2mj" path="res://scenes/CenaFogueira/scripts/fogueira.gd" id="1_b8aap"]
-[ext_resource type="Texture2D" uid="uid://ca3rirexy4cuv" path="res://scenes/CenaFogueira/sprites/icones/f.png" id="2_b8aap"]
 [ext_resource type="Texture2D" uid="uid://biu3eoq5csvh1" path="res://scenes/CenaFogueira/sprites/icones/a.png" id="3_r6xa7"]
 [ext_resource type="Texture2D" uid="uid://mh7ti0bs38yv" path="res://scenes/CenaFogueira/background/01_sky.png" id="3_sbdmr"]
 [ext_resource type="Texture2D" uid="uid://bjcy8cnhhkqwl" path="res://scenes/CenaFogueira/background/02_sky.png" id="4_dxs3v"]
@@ -1734,35 +1733,29 @@ position = Vector2(122, 55)
 scale = Vector2(0.671875, 0.671875)
 texture = SubResource("CompressedTexture2D_b8aap")
 
-[node name="Lena" type="Node2D" parent="Botoes" unique_id=1578130546]
-
-[node name="SpriteInputLena" type="Sprite2D" parent="Botoes/Lena" unique_id=1996294517]
-position = Vector2(950, 530)
-scale = Vector2(0.5, 0.5)
-texture = ExtResource("2_b8aap")
-
 [node name="P1" type="Node2D" parent="Botoes" unique_id=1496817901]
 
 [node name="SpriteInputP1" type="Sprite2D" parent="Botoes/P1" unique_id=1623446425]
-position = Vector2(330, 530)
+position = Vector2(622, 475)
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("3_r6xa7")
 
 [node name="P2" type="Node2D" parent="Botoes" unique_id=1058945730]
 
 [node name="SpriteInputP2" type="Sprite2D" parent="Botoes/P2" unique_id=256860269]
-position = Vector2(500, 469)
+position = Vector2(491, 475)
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("4_sbdmr")
 
 [node name="P3" type="Node2D" parent="Botoes" unique_id=1196046544]
 
 [node name="SpriteInputP3" type="Sprite2D" parent="Botoes/P3" unique_id=1178320582]
-position = Vector2(780, 469)
+position = Vector2(767, 475)
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("5_dw1ew")
 
 [node name="OpcoesFinal" type="Control" parent="Botoes" unique_id=1856291852]
+visible = false
 layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0
@@ -1791,15 +1784,7 @@ icon_alignment = 2
 
 [node name="SceneManager" type="Node" parent="." unique_id=467625782]
 
-[node name="Control" type="Control" parent="." unique_id=1013078406]
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="PointLight2D" type="PointLight2D" parent="." unique_id=131721809]
+[node name="LuzFogueira1" type="PointLight2D" parent="." unique_id=131721809]
 texture_filter = 2
 position = Vector2(623.99994, 612)
 scale = Vector2(11.562504, 2.851562)
@@ -1810,7 +1795,7 @@ shadow_filter = 1
 texture = SubResource("GradientTexture2D_3sytw")
 texture_scale = 1.5
 
-[node name="PointLight2D2" type="PointLight2D" parent="." unique_id=2023501373]
+[node name="LuzFogueira2" type="PointLight2D" parent="." unique_id=2023501373]
 position = Vector2(628, 597)
 scale = Vector2(2.4374986, 1.3281251)
 color = Color(1, 0.6666667, 0.33333334, 1)
@@ -1819,19 +1804,59 @@ texture = SubResource("GradientTexture2D_3sytw")
 
 [node name="Characters" type="Node2D" parent="." unique_id=1809471546]
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Characters" unique_id=1678876891]
+[node name="SpriteTemp1" type="AnimatedSprite2D" parent="Characters" unique_id=1678876891]
 process_mode = 3
 light_mask = 3
 texture_filter = 1
 material = SubResource("CanvasItemMaterial_p1eju")
-position = Vector2(499.00003, 534)
+position = Vector2(624, 534)
 scale = Vector2(2.1601563, 2.1601563)
 sprite_frames = SubResource("SpriteFrames_05jeh")
 frame_progress = 0.62588423
 
-[node name="PointLight2D" type="PointLight2D" parent="Characters/AnimatedSprite2D" unique_id=1956897014]
-position = Vector2(3.0090246, 0.92585206)
+[node name="LuzNoPersonagem" type="PointLight2D" parent="Characters/SpriteTemp1" unique_id=1956897014]
+position = Vector2(-0.46291828, 0.92585206)
 scale = Vector2(0.20976488, 0.5207956)
+color = Color(0.99607843, 0.77254903, 0, 1)
+energy = 4.14
+range_item_cull_mask = 2
+texture = SubResource("GradientTexture2D_twkuq")
+
+[node name="SpriteTemp2" type="AnimatedSprite2D" parent="Characters" unique_id=1128673531]
+process_mode = 3
+light_mask = 3
+texture_filter = 1
+material = SubResource("CanvasItemMaterial_p1eju")
+position = Vector2(493.00006, 534)
+scale = Vector2(2.1601563, 2.1601563)
+sprite_frames = SubResource("SpriteFrames_05jeh")
+autoplay = "default"
+frame_progress = 0.62588423
+
+[node name="LuzNoPersonagem2" type="PointLight2D" parent="Characters/SpriteTemp2" unique_id=504986383]
+position = Vector2(-0.46291828, 0.92585206)
+scale = Vector2(0.20976488, 0.5207956)
+color = Color(0.99607843, 0.77254903, 0, 1)
+energy = 4.14
+range_item_cull_mask = 2
+texture = SubResource("GradientTexture2D_twkuq")
+
+[node name="SpriteTemp3" type="AnimatedSprite2D" parent="Characters" unique_id=371794807]
+process_mode = 3
+light_mask = 3
+texture_filter = 1
+material = SubResource("CanvasItemMaterial_p1eju")
+position = Vector2(768, 536)
+scale = Vector2(2.1601563, 2.1601563)
+sprite_frames = SubResource("SpriteFrames_05jeh")
+autoplay = "default"
+frame_progress = 0.62588423
+flip_h = true
+
+[node name="LuzNoPersonagem3" type="PointLight2D" parent="Characters/SpriteTemp3" unique_id=1681353610]
+position = Vector2(-1.2165895, 1.3887813)
+rotation = -3.1415927
+scale = Vector2(0.28747848, 0.5207956)
 color = Color(0.99607843, 0.77254903, 0, 1)
 energy = 4.14
 range_item_cull_mask = 2
@@ -1843,7 +1868,7 @@ offset = Vector2(640, 360)
 [node name="FadeLayer" type="CanvasLayer" parent="Camera2D" unique_id=315979223]
 layer = 100
 
-[node name="ColorRect" type="ColorRect" parent="Camera2D/FadeLayer" unique_id=1082307605]
+[node name="TelaPretaInicioDaCena" type="ColorRect" parent="Camera2D/FadeLayer" unique_id=1082307605]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1855,4 +1880,3 @@ color = Color(0, 0, 0, 1)
 process_mode = 3
 stream = ExtResource("24_6o8vk")
 volume_db = -15.0
-autoplay = true

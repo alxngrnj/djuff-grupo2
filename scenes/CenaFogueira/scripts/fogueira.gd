@@ -1,59 +1,39 @@
 extends Node
 
-@onready var opcoes_final: Control = $Botoes/OpcoesFinal
-@onready var btn_opcao_1: Button = $Botoes/OpcoesFinal/Opcao1
-@onready var btn_opcao_2: Button = $Botoes/OpcoesFinal/Opcao2
-
 @onready var anim_bonfire = $Background/Objects/Fogueira
-@onready var anim_characters = $Characters/AnimatedSprite2D
+@onready var anim_characters = $Characters/SpriteTemp1
 
 @onready var dialogue_manager = $DialogueManager
 @onready var encerrar_cena: Label = $Botoes/EncerrarCena
 
 @onready var botoes = $Botoes
-@onready var input_lena: Sprite2D = $Botoes/Lena/SpriteInputLena
 @onready var input_p1: Sprite2D = $Botoes/P1/SpriteInputP1
 @onready var input_p2: Sprite2D = $Botoes/P2/SpriteInputP2
 @onready var input_p3: Sprite2D = $Botoes/P3/SpriteInputP3
 
 @onready var camera = $Camera2D
-@onready var fade_rect = $Camera2D/FadeLayer/ColorRect
-@onready var luz = $PointLight2D
+@onready var fade_rect = $Camera2D/FadeLayer/TelaPretaInicioDaCena
+@onready var luz = $LuzFogueira1
 
-@onready var som_ambiente: AudioStreamPlayer = $SomAmbiente
-
-# Inserir os caminhos dos finais aqui
-@export_file("*.tscn") var proxima_cena: String = "res://scenes/final1.tscn" 
-@export_file("*.tscn") var cena_final_opcao_1: String = "res://scenes/final1.tscn" 
-@export_file("*.tscn") var cena_final_opcao_2: String = "res://scenes/final2.tscn" 
-@export_file("*.tscn") var cena_final_grupo: String = "res://scenes/final3.tscn"
-
-@export var min_amigos_para_escolha: int = 2
+#@onready var som_ambiente: AudioStreamPlayer = $SomAmbiente
 
 var escala_original: float = 1.0
 
 # Trava os comandos do jogador até a transição inicial terminar
 var intro_concluida: bool = false
 
-var personagens_conversados: Array[String] = [] 
-var em_conversa_grupo: bool = false
-var escolhendo_final: bool = false
+var personagens_conversados: Array[String] = []
 var transicionando: bool = false
-
 var em_conversas: bool = false
 
 var base_energy: float = 1.0 # Ajuste para a força base da sua luz
 var noise = FastNoiseLite.new()
 var time_passed: float = 0.0
 
-# Referência para o texto de debug na tela
-var debug_label: Label
+var final_id: int = 1
 
-# Bloqueia inputs durante o intervalo antes da conversa em grupo
-var aguardando_grupo: bool = false
 
 func _ready() -> void:
-	
 	# Escala 1.0 nessa cena
 	escala_original = get_window().content_scale_factor
 	get_window().content_scale_factor = 1.0
@@ -62,19 +42,21 @@ func _ready() -> void:
 	anim_characters.play("default")
 	noise.frequency = 0.1 # Velocidade da tremulação da fogueira
 	
-	# Esconde o menu de escolhas e conecta os sinais de clique
-	opcoes_final.visible = false
+	# Garante que o antigo menu de escolhas fique oculto caso ainda exista na cena
+	var opcoes_final = get_node_or_null("Botoes/OpcoesFinal")
+	if opcoes_final:
+		opcoes_final.visible = false
 	
 	show_buttons(true)
 	
 	fade_rect.color.a = 1.0 # Tela preta
-	fade_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE # Impede o fade de bloquear cliques nos botões
+	fade_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE # Impede o fade de bloquear cliques
 	
 	# Guarda o volume definido no Inspector e inicia o som bem baixo
-	var volume_alvo: float = 0.0
-	if som_ambiente:
-		volume_alvo = som_ambiente.volume_db
-		som_ambiente.volume_db = -40.0
+	#var volume_alvo: float = 0.0
+	#if som_ambiente:
+		#volume_alvo = som_ambiente.volume_db
+		#som_ambiente.volume_db = -40.0
 	
 	camera.position = Vector2(0, -300) # Câmera do jogo começa mostrando o céu aqui
 	camera.zoom = Vector2(1, 1) # Câmera mais "aberta" no inicio
@@ -85,8 +67,8 @@ func _ready() -> void:
 	
 	tween.tween_property(fade_rect, "color:a", 0.0, 3.0) #tela preta começa a sumir
 	
-	if som_ambiente:
-		tween.parallel().tween_property(som_ambiente, "volume_db", volume_alvo, 3.0)
+	#if som_ambiente:
+		#tween.parallel().tween_property(som_ambiente, "volume_db", volume_alvo, 3.0)
 		
 	# Inicia o movimento para baixo da câmera
 	tween.tween_property(camera, "position", Vector2(0, 100), 3.5)\
@@ -99,29 +81,14 @@ func _ready() -> void:
 		.set_ease(Tween.EASE_IN_OUT)
 		
 	#botões aparecem
-	tween.finished.connect(show_buttons.bind(true, true)) 
+	tween.finished.connect(show_buttons.bind(true, true))
 
 
 func _process(_delta: float) -> void:
-
-	# Intercepta o fim de cada diálogo para checar a contagem de quantos personagens o jogador conversou
+	# Verifica se está acontecendo um dialogo; se não, volta a mostrar os botões na tela.
 	if em_conversas and not dialogue_manager.is_dialogue_active:
 		em_conversas = false
-		
-		# 1. Se acabou a conversa em grupo, vai direto para o 3º final
-		if em_conversa_grupo:
-			Global.fogueira_concluida = true
-			transicionar_para_cena(cena_final_grupo)
-			return
-			
-		# 2. Se conversou com 4 amigos, inicia a conversa do grupo automaticamente
-		if personagens_conversados.size() == 4:
-			aguardando_grupo = true 
-			get_tree().create_timer(1.5).timeout.connect(iniciar_conversa_grupo) # ALTERADO
-			return
-			
-		# 3. Caso contrário (< 4), apenas reexibe os botões normais
-		show_buttons(true)	
+		show_buttons(true)
 		
 	time_passed += _delta * 60.0
 	# Variação na luz da fogueira
@@ -129,20 +96,12 @@ func _process(_delta: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	# Bloqueia inputs também durante a escolha de final
-	if not intro_concluida or dialogue_manager.is_dialogue_active or transicionando or aguardando_grupo:
+	# Bloqueia inputs durante a transição inicial, diálogos ou saída da cena
+	if not intro_concluida or dialogue_manager.is_dialogue_active or transicionando:
 		return
 
-	# 2. Verifica se o evento é uma tecla do teclado sendo pressionada
+	# Verifica se o evento é uma tecla do teclado sendo pressionada
 	if event is InputEventKey and event.pressed:
-		# Se as opções de final estiverem na tela, escuta apenas as teclas das opções
-		if escolhendo_final:
-			if event.keycode == KEY_A:
-				_on_opcao_1_pressed()
-			elif event.keycode == KEY_D:
-				_on_opcao_2_pressed()
-			return
-			
 		# A chama o P1
 		if event.keycode == KEY_A:
 			inicializar_conversas("Kai")
@@ -155,10 +114,6 @@ func _unhandled_input(event: InputEvent) -> void:
 		elif event.keycode == KEY_D:
 			inicializar_conversas("Sera")
 			
-		# F chama Lena
-		elif event.keycode == KEY_F:
-			inicializar_conversas("Lena")
-			
 		# encerra a cena se clicar ENTER
 		elif event.keycode == KEY_ENTER or event.keycode == KEY_KP_ENTER:
 			encerrar_fogueira()
@@ -167,7 +122,7 @@ func _unhandled_input(event: InputEvent) -> void:
 #colocar dialogos nessa função
 func inicializar_conversas(id_personagem: String) -> void:
 	# Evita contar o mesmo personagem mais de uma vez na lista de personagens conversados
-	if not id_personagem in personagens_conversados:
+	if id_personagem in ["Kai", "Sebastiao", "Sera"] and not id_personagem in personagens_conversados:
 		personagens_conversados.append(id_personagem)
 		
 	em_conversas = true
@@ -188,10 +143,6 @@ func inicializar_conversas(id_personagem: String) -> void:
 		falas = [
 			{"nome": "Sera", "texto": "Suspendisse efficitur risus vel ex mollis, quis dapibus metus cursus. Fusce vitae mauris congue, mattis ante sed, pretium turpis. Donec molestie ultrices tortor aliquet mollis. Aliquam convallis sapien eget auctor condimentum. Duis tempor pellentesque mi quis posuere. Donec ultricies lacus ultrices convallis iaculis. Donec arcu nunc, vestibulum quis suscipit non, commodo vitae erat. "}
 		]
-	elif id_personagem == "Lena":
-		falas = [
-			{"nome": "Lena", "texto": "Phasellus non diam turpis. Phasellus sit amet dui vehicula justo luctus malesuada. Pellentesque non bibendum magna. Nulla ultrices a libero quis vehicula. Donec ac orci non elit molestie elementum a non felis. Phasellus ultricies mollis enim non pulvinar. Pellentesque fermentum varius hendrerit. Cras lacinia eleifend quam, vitae elementum justo scelerisque vitae. Suspendisse potenti. "}
-		]
 
 	#chama a função de iniciar o dialogo em dialogue_manager.gd
 	dialogue_manager.start_dialogue(falas)
@@ -208,18 +159,6 @@ func show_buttons(estado: bool = true, com_fade: bool = false) -> void:
 		# Faz os botões surgirem suavemente (fade in) em 1 segundo
 		tween_botoes.tween_property(botoes, "modulate:a", 1.0, 1.0)
 
-	if input_lena: 
-		input_lena.visible = estado
-	if input_p1: 
-		input_p1.visible = estado
-	if input_p2: 
-		input_p2.visible = estado
-	if input_p3: 
-		input_p3.visible = estado
-	if encerrar_cena:
-		encerrar_cena.visible = estado
-	if input_lena: 
-		input_lena.visible = estado
 	if input_p1: 
 		input_p1.visible = estado
 	if input_p2: 
@@ -231,42 +170,15 @@ func show_buttons(estado: bool = true, com_fade: bool = false) -> void:
 
 
 func encerrar_fogueira() -> void:
-	var qtd_conversas = personagens_conversados.size()
-	
-	if qtd_conversas >= min_amigos_para_escolha:
-		escolhendo_final = true
-		show_buttons(false)
-		opcoes_final.visible = true
+	if personagens_conversados.is_empty():
+		Global.final_id = 1
+	elif personagens_conversados.size() < 3:
+		Global.final_id = 2
 	else:
-		Global.fogueira_concluida = true
-		transicionar_para_cena(proxima_cena) # ALTERADO
-
-
-# Dispara o diálogo automático ao falar com os 4 personagens
-#Colocar os dialogos da conversa em grupo aqui
-func iniciar_conversa_grupo() -> void:
-	em_conversas = true
-	em_conversa_grupo = true
-	show_buttons(false)
-	
-	var falas_grupo: Array = [
-		{"nome": "Kai", "texto": "teste"},
-		{"nome": "Lena", "texto": "teste2"},
-		{"nome": "Sebastião", "texto": "teste3"}
-	]
-	
-	dialogue_manager.start_dialogue(falas_grupo)
-
-
-# Ações dos 2 botões de escolha
-func _on_opcao_1_pressed() -> void:
+		Global.final_id = 3
+		
 	Global.fogueira_concluida = true
-	transicionar_para_cena(cena_final_opcao_1)
-
-
-func _on_opcao_2_pressed() -> void:
-	Global.fogueira_concluida = true
-	transicionar_para_cena(cena_final_opcao_2) # ALTERADO
+	transicionar_para_cena("res://scenes/finais/final_%d.tscn" % Global.final_id)
 
 
 func transicionar_para_cena(caminho_cena: String) -> void:
@@ -276,12 +188,14 @@ func transicionar_para_cena(caminho_cena: String) -> void:
 	transicionando = true
 	show_buttons(false)
 	
-	if opcoes_final: # Esconde as opções de final durante o fade-out
-		opcoes_final.visible = false
-	
 	var tween_saida = create_tween()
 	tween_saida.tween_property(fade_rect, "color:a", 1.0, 2.0)
 	# Abaixa o volume em paralelo com o escurecimento da tela
-	if som_ambiente:
-		tween_saida.parallel().tween_property(som_ambiente, "volume_db", -80.0, 2.0)
+	#if som_ambiente:
+		#tween_saida.parallel().tween_property(som_ambiente, "volume_db", -80.0, 2.0)
 	tween_saida.finished.connect(func(): get_tree().change_scene_to_file(caminho_cena))
+
+
+func _exit_tree() -> void:
+	# Restaura a escala original do projeto ao sair para as cenas de final
+	get_window().content_scale_factor = escala_original
