@@ -14,6 +14,10 @@ const CONFIG_SETTINGS_SECTION := "settings"
 var fogueira_concluida: bool = false
 var final_id: int = 0
 
+func reset_progress() -> void:
+	final_id = 0
+	fogueira_concluida = false
+
 func _ready() -> void:
 	print_debug("Global ready")
 	Engine.max_fps = 60

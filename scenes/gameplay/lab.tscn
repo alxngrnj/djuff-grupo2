@@ -1,0 +1,790 @@
+[gd_scene format=4 uid="uid://bfwuhoqpeptyb"]
+
+[ext_resource type="Script" uid="uid://cpaypb57qofpu" path="res://scripts/gameplay/lab.gd" id="1_8au1k"]
+[ext_resource type="Shader" uid="uid://de6kv5p4t46qc" path="res://assets/shaders/lab_floor.gdshader" id="2_03bqk"]
+[ext_resource type="PackedScene" uid="uid://cv830nvsg2o4q" path="res://scenes/player.tscn" id="2_jb4g5"]
+[ext_resource type="Texture2D" uid="uid://ctqgmini0pugq" path="res://assets/pixel_cyberpunk_interior_free_1.0.1/pixel-cyberpunk-interior.png" id="2_t6rqj"]
+[ext_resource type="PackedScene" uid="uid://p5wa6sh0aq3p" path="res://scenes/CenaFogueira/dialogue_manager.tscn" id="4_dialogue"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_suw2g"]
+shader = ExtResource("2_03bqk")
+shader_parameter/cull_backface = true
+shader_parameter/use_front = true
+shader_parameter/fov = 90.0000042275
+shader_parameter/rot_y_deg = 0.0
+shader_parameter/rot_x_deg = 44.00001918999999
+shader_parameter/inset = 0.0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_03bqk"]
+texture = ExtResource("2_t6rqj")
+texture_region_size = Vector2i(32, 32)
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+0:3/0 = 0
+1:3/0 = 0
+2:3/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_topl8"]
+tile_size = Vector2i(32, 32)
+sources/2 = SubResource("TileSetAtlasSource_03bqk")
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_t6rqj"]
+texture = ExtResource("2_t6rqj")
+0:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+5:0/0 = 0
+6:0/0 = 0
+7:0/0 = 0
+8:0/0 = 0
+9:0/0 = 0
+11:0/0 = 0
+12:0/0 = 0
+13:0/0 = 0
+14:0/0 = 0
+15:0/0 = 0
+16:0/0 = 0
+17:0/0 = 0
+18:0/0 = 0
+19:0/0 = 0
+20:0/0 = 0
+21:0/0 = 0
+22:0/0 = 0
+23:0/0 = 0
+26:0/0 = 0
+27:0/0 = 0
+28:0/0 = 0
+29:0/0 = 0
+30:0/0 = 0
+31:0/0 = 0
+32:0/0 = 0
+33:0/0 = 0
+34:0/0 = 0
+35:0/0 = 0
+36:0/0 = 0
+37:0/0 = 0
+38:0/0 = 0
+39:0/0 = 0
+40:0/0 = 0
+41:0/0 = 0
+0:1/0 = 0
+3:1/0 = 0
+4:1/0 = 0
+5:1/0 = 0
+6:1/0 = 0
+7:1/0 = 0
+8:1/0 = 0
+9:1/0 = 0
+11:1/0 = 0
+12:1/0 = 0
+13:1/0 = 0
+14:1/0 = 0
+15:1/0 = 0
+16:1/0 = 0
+17:1/0 = 0
+18:1/0 = 0
+19:1/0 = 0
+20:1/0 = 0
+21:1/0 = 0
+22:1/0 = 0
+23:1/0 = 0
+26:1/0 = 0
+27:1/0 = 0
+28:1/0 = 0
+29:1/0 = 0
+30:1/0 = 0
+31:1/0 = 0
+32:1/0 = 0
+33:1/0 = 0
+34:1/0 = 0
+35:1/0 = 0
+36:1/0 = 0
+37:1/0 = 0
+38:1/0 = 0
+39:1/0 = 0
+40:1/0 = 0
+41:1/0 = 0
+0:2/0 = 0
+3:2/0 = 0
+4:2/0 = 0
+5:2/0 = 0
+6:2/0 = 0
+7:2/0 = 0
+8:2/0 = 0
+9:2/0 = 0
+12:2/0 = 0
+13:2/0 = 0
+14:2/0 = 0
+15:2/0 = 0
+16:2/0 = 0
+17:2/0 = 0
+18:2/0 = 0
+19:2/0 = 0
+22:2/0 = 0
+23:2/0 = 0
+26:2/0 = 0
+27:2/0 = 0
+28:2/0 = 0
+29:2/0 = 0
+30:2/0 = 0
+31:2/0 = 0
+32:2/0 = 0
+33:2/0 = 0
+34:2/0 = 0
+35:2/0 = 0
+36:2/0 = 0
+37:2/0 = 0
+38:2/0 = 0
+39:2/0 = 0
+40:2/0 = 0
+41:2/0 = 0
+0:3/0 = 0
+3:3/0 = 0
+4:3/0 = 0
+5:3/0 = 0
+6:3/0 = 0
+7:3/0 = 0
+8:3/0 = 0
+9:3/0 = 0
+12:3/0 = 0
+13:3/0 = 0
+14:3/0 = 0
+15:3/0 = 0
+16:3/0 = 0
+17:3/0 = 0
+18:3/0 = 0
+19:3/0 = 0
+22:3/0 = 0
+23:3/0 = 0
+26:3/0 = 0
+27:3/0 = 0
+28:3/0 = 0
+29:3/0 = 0
+30:3/0 = 0
+31:3/0 = 0
+32:3/0 = 0
+33:3/0 = 0
+34:3/0 = 0
+35:3/0 = 0
+36:3/0 = 0
+37:3/0 = 0
+38:3/0 = 0
+39:3/0 = 0
+40:3/0 = 0
+41:3/0 = 0
+0:4/0 = 0
+1:4/0 = 0
+2:4/0 = 0
+3:4/0 = 0
+4:4/0 = 0
+5:4/0 = 0
+6:4/0 = 0
+7:4/0 = 0
+8:4/0 = 0
+9:4/0 = 0
+13:4/0 = 0
+14:4/0 = 0
+15:4/0 = 0
+16:4/0 = 0
+20:4/0 = 0
+21:4/0 = 0
+22:4/0 = 0
+23:4/0 = 0
+24:4/0 = 0
+25:4/0 = 0
+26:4/0 = 0
+27:4/0 = 0
+28:4/0 = 0
+29:4/0 = 0
+30:4/0 = 0
+31:4/0 = 0
+32:4/0 = 0
+33:4/0 = 0
+34:4/0 = 0
+35:4/0 = 0
+36:4/0 = 0
+37:4/0 = 0
+38:4/0 = 0
+39:4/0 = 0
+40:4/0 = 0
+41:4/0 = 0
+0:5/0 = 0
+1:5/0 = 0
+2:5/0 = 0
+3:5/0 = 0
+4:5/0 = 0
+5:5/0 = 0
+6:5/0 = 0
+7:5/0 = 0
+8:5/0 = 0
+9:5/0 = 0
+13:5/0 = 0
+14:5/0 = 0
+15:5/0 = 0
+16:5/0 = 0
+20:5/0 = 0
+21:5/0 = 0
+22:5/0 = 0
+23:5/0 = 0
+24:5/0 = 0
+25:5/0 = 0
+26:5/0 = 0
+27:5/0 = 0
+28:5/0 = 0
+29:5/0 = 0
+30:5/0 = 0
+31:5/0 = 0
+32:5/0 = 0
+33:5/0 = 0
+34:5/0 = 0
+35:5/0 = 0
+36:5/0 = 0
+37:5/0 = 0
+38:5/0 = 0
+39:5/0 = 0
+40:5/0 = 0
+41:5/0 = 0
+0:6/0 = 0
+1:6/0 = 0
+2:6/0 = 0
+3:6/0 = 0
+4:6/0 = 0
+5:6/0 = 0
+6:6/0 = 0
+7:6/0 = 0
+8:6/0 = 0
+9:6/0 = 0
+13:6/0 = 0
+14:6/0 = 0
+15:6/0 = 0
+16:6/0 = 0
+20:6/0 = 0
+21:6/0 = 0
+22:6/0 = 0
+23:6/0 = 0
+26:6/0 = 0
+27:6/0 = 0
+28:6/0 = 0
+29:6/0 = 0
+32:6/0 = 0
+33:6/0 = 0
+34:6/0 = 0
+35:6/0 = 0
+38:6/0 = 0
+39:6/0 = 0
+0:7/0 = 0
+1:7/0 = 0
+2:7/0 = 0
+3:7/0 = 0
+4:7/0 = 0
+5:7/0 = 0
+6:7/0 = 0
+7:7/0 = 0
+8:7/0 = 0
+9:7/0 = 0
+13:7/0 = 0
+14:7/0 = 0
+15:7/0 = 0
+16:7/0 = 0
+20:7/0 = 0
+21:7/0 = 0
+22:7/0 = 0
+23:7/0 = 0
+26:7/0 = 0
+27:7/0 = 0
+28:7/0 = 0
+29:7/0 = 0
+32:7/0 = 0
+33:7/0 = 0
+34:7/0 = 0
+35:7/0 = 0
+38:7/0 = 0
+39:7/0 = 0
+20:8/0 = 0
+21:8/0 = 0
+22:8/0 = 0
+23:8/0 = 0
+26:8/0 = 0
+27:8/0 = 0
+29:8/0 = 0
+32:8/0 = 0
+33:8/0 = 0
+34:8/0 = 0
+35:8/0 = 0
+3:9/0 = 0
+4:9/0 = 0
+5:9/0 = 0
+6:9/0 = 0
+20:9/0 = 0
+21:9/0 = 0
+22:9/0 = 0
+23:9/0 = 0
+32:9/0 = 0
+33:9/0 = 0
+34:9/0 = 0
+35:9/0 = 0
+3:10/0 = 0
+6:10/0 = 0
+12:10/0 = 0
+13:10/0 = 0
+14:10/0 = 0
+15:10/0 = 0
+16:10/0 = 0
+17:10/0 = 0
+20:10/0 = 0
+21:10/0 = 0
+22:10/0 = 0
+23:10/0 = 0
+24:10/0 = 0
+25:10/0 = 0
+26:10/0 = 0
+27:10/0 = 0
+32:10/0 = 0
+33:10/0 = 0
+34:10/0 = 0
+35:10/0 = 0
+36:10/0 = 0
+37:10/0 = 0
+38:10/0 = 0
+39:10/0 = 0
+1:11/0 = 0
+2:11/0 = 0
+3:11/0 = 0
+6:11/0 = 0
+7:11/0 = 0
+8:11/0 = 0
+12:11/0 = 0
+13:11/0 = 0
+14:11/0 = 0
+15:11/0 = 0
+16:11/0 = 0
+17:11/0 = 0
+20:11/0 = 0
+21:11/0 = 0
+22:11/0 = 0
+23:11/0 = 0
+24:11/0 = 0
+25:11/0 = 0
+26:11/0 = 0
+27:11/0 = 0
+32:11/0 = 0
+33:11/0 = 0
+34:11/0 = 0
+35:11/0 = 0
+36:11/0 = 0
+37:11/0 = 0
+38:11/0 = 0
+39:11/0 = 0
+1:12/0 = 0
+8:12/0 = 0
+12:12/0 = 0
+13:12/0 = 0
+14:12/0 = 0
+15:12/0 = 0
+16:12/0 = 0
+17:12/0 = 0
+24:12/0 = 0
+25:12/0 = 0
+26:12/0 = 0
+27:12/0 = 0
+32:12/0 = 0
+33:12/0 = 0
+34:12/0 = 0
+35:12/0 = 0
+36:12/0 = 0
+37:12/0 = 0
+1:13/0 = 0
+8:13/0 = 0
+12:13/0 = 0
+13:13/0 = 0
+14:13/0 = 0
+15:13/0 = 0
+16:13/0 = 0
+17:13/0 = 0
+32:13/0 = 0
+33:13/0 = 0
+34:13/0 = 0
+35:13/0 = 0
+36:13/0 = 0
+37:13/0 = 0
+1:14/0 = 0
+2:14/0 = 0
+3:14/0 = 0
+6:14/0 = 0
+7:14/0 = 0
+8:14/0 = 0
+20:14/0 = 0
+21:14/0 = 0
+22:14/0 = 0
+23:14/0 = 0
+24:14/0 = 0
+25:14/0 = 0
+26:14/0 = 0
+27:14/0 = 0
+28:14/0 = 0
+29:14/0 = 0
+30:14/0 = 0
+31:14/0 = 0
+32:14/0 = 0
+33:14/0 = 0
+34:14/0 = 0
+35:14/0 = 0
+36:14/0 = 0
+37:14/0 = 0
+38:14/0 = 0
+39:14/0 = 0
+3:15/0 = 0
+6:15/0 = 0
+12:15/0 = 0
+13:15/0 = 0
+14:15/0 = 0
+15:15/0 = 0
+16:15/0 = 0
+17:15/0 = 0
+20:15/0 = 0
+21:15/0 = 0
+22:15/0 = 0
+23:15/0 = 0
+24:15/0 = 0
+25:15/0 = 0
+26:15/0 = 0
+27:15/0 = 0
+28:15/0 = 0
+29:15/0 = 0
+30:15/0 = 0
+31:15/0 = 0
+32:15/0 = 0
+33:15/0 = 0
+34:15/0 = 0
+35:15/0 = 0
+36:15/0 = 0
+37:15/0 = 0
+38:15/0 = 0
+39:15/0 = 0
+3:16/0 = 0
+4:16/0 = 0
+5:16/0 = 0
+6:16/0 = 0
+12:16/0 = 0
+13:16/0 = 0
+14:16/0 = 0
+15:16/0 = 0
+16:16/0 = 0
+17:16/0 = 0
+24:16/0 = 0
+25:16/0 = 0
+26:16/0 = 0
+27:16/0 = 0
+28:16/0 = 0
+29:16/0 = 0
+30:16/0 = 0
+31:16/0 = 0
+38:16/0 = 0
+39:16/0 = 0
+12:17/0 = 0
+13:17/0 = 0
+14:17/0 = 0
+15:17/0 = 0
+16:17/0 = 0
+17:17/0 = 0
+24:17/0 = 0
+25:17/0 = 0
+26:17/0 = 0
+27:17/0 = 0
+28:17/0 = 0
+29:17/0 = 0
+30:17/0 = 0
+31:17/0 = 0
+38:17/0 = 0
+39:17/0 = 0
+12:18/0 = 0
+13:18/0 = 0
+14:18/0 = 0
+15:18/0 = 0
+16:18/0 = 0
+17:18/0 = 0
+18:18/0 = 0
+19:18/0 = 0
+20:18/0 = 0
+21:18/0 = 0
+22:18/0 = 0
+23:18/0 = 0
+24:18/0 = 0
+25:18/0 = 0
+26:18/0 = 0
+27:18/0 = 0
+12:19/0 = 0
+13:19/0 = 0
+14:19/0 = 0
+15:19/0 = 0
+16:19/0 = 0
+17:19/0 = 0
+18:19/0 = 0
+19:19/0 = 0
+20:19/0 = 0
+21:19/0 = 0
+22:19/0 = 0
+23:19/0 = 0
+24:19/0 = 0
+25:19/0 = 0
+26:19/0 = 0
+27:19/0 = 0
+12:20/0 = 0
+13:20/0 = 0
+14:20/0 = 0
+15:20/0 = 0
+16:20/0 = 0
+17:20/0 = 0
+18:20/0 = 0
+19:20/0 = 0
+20:20/0 = 0
+21:20/0 = 0
+22:20/0 = 0
+23:20/0 = 0
+24:20/0 = 0
+25:20/0 = 0
+26:20/0 = 0
+27:20/0 = 0
+12:21/0 = 0
+13:21/0 = 0
+14:21/0 = 0
+15:21/0 = 0
+24:21/0 = 0
+25:21/0 = 0
+26:21/0 = 0
+27:21/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_jg4xt"]
+sources/0 = SubResource("TileSetAtlasSource_t6rqj")
+
+[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_8l5cb"]
+distance = -305.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_topl8"]
+atlas = ExtResource("2_t6rqj")
+region = Rect2(64.40251, 0, 95.97299, 43.9599)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0bvwj"]
+atlas = ExtResource("2_t6rqj")
+region = Rect2(79.55089, 20.644073, 71.886444, 24.250854)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8l5cb"]
+atlas = ExtResource("2_t6rqj")
+region = Rect2(56.069054, 0.14059734, 7.966812, 63.743412)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jo7ap"]
+atlas = ExtResource("2_t6rqj")
+region = Rect2(583.8081, 3.7072334, 78.50922, 25.674799)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_8oqth"]
+size = Vector2(160, 29.000015)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7wqc7"]
+atlas = ExtResource("2_t6rqj")
+region = Rect2(207.49582, 64.65092, 64.985504, 28.991638)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wbm6s"]
+atlas = ExtResource("2_t6rqj")
+region = Rect2(352.7032, 95.579765, 23.463562, 30.465813)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_gvguv"]
+size = Vector2(239, 49)
+
+[node name="Lab" type="Node2D" unique_id=1676310357]
+process_mode = 3
+script = ExtResource("1_8au1k")
+
+[node name="Environment" type="CanvasLayer" parent="." unique_id=643788285]
+layer = -1
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="Environment" unique_id=1622866632]
+material = SubResource("ShaderMaterial_suw2g")
+offset_left = 192.0
+offset_top = 131.67
+offset_right = 960.0
+offset_bottom = 637.0
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="Environment/SubViewportContainer" unique_id=1735186463]
+transparent_bg = true
+handle_input_locally = false
+canvas_item_default_texture_filter = 0
+size = Vector2i(768, 505)
+render_target_update_mode = 4
+
+[node name="ground" type="TileMapLayer" parent="Environment/SubViewportContainer/SubViewport" unique_id=489661557]
+z_index = -1
+texture_filter = 1
+position = Vector2(0, -455)
+tile_map_data = PackedByteArray("AAABABgAAgABAAIAAAADABgAAgAAAAIAAAADABkAAgAAAAMAAAACABoAAgACAAIAAAACABsAAgACAAMAAAADABoAAgAAAAIAAAACAB4AAgACAAIAAAAEABgAAgABAAIAAAAEABkAAgABAAMAAAAFABgAAgACAAIAAAAFABkAAgACAAMAAAAFAB4AAgACAAIAAAAGABgAAgAAAAIAAAAHABgAAgABAAIAAAAGABsAAgAAAAMAAAAHAB0AAgABAAMAAAAGAB4AAgAAAAIAAAAIABgAAgACAAIAAAAIABkAAgACAAMAAAAJABgAAgAAAAIAAAAJABkAAgAAAAMAAAAJAB4AAgAAAAIAAAALABcAAgACAAMAAAAKABgAAgABAAIAAAAKABkAAgABAAMAAAALABgAAgACAAIAAAALABkAAgACAAMAAAAKAB4AAgABAAIAAAALAB4AAgACAAIAAAAMABcAAgAAAAMAAAANABcAAgABAAMAAAAMABgAAgAAAAIAAAAMABkAAgAAAAMAAAANABgAAgABAAIAAAANABkAAgABAAMAAAAMABwAAgAAAAIAAAAMAB4AAgAAAAIAAAANAB4AAgABAAIAAAAOABcAAgACAAMAAAAPABcAAgAAAAMAAAAOABgAAgACAAIAAAAOABkAAgACAAMAAAAPABgAAgAAAAIAAAAPABkAAgAAAAMAAAAOABoAAgACAAIAAAAPABoAAgAAAAIAAAAPABwAAgAAAAIAAAAPAB0AAgAAAAMAAAAOAB4AAgACAAIAAAAPAB4AAgAAAAIAAAAQABcAAgABAAMAAAARABcAAgACAAMAAAAQABgAAgABAAIAAAAQABkAAgABAAMAAAARABgAAgACAAIAAAARABkAAgACAAMAAAAQABwAAgABAAIAAAAQAB0AAgABAAMAAAARABwAAgACAAIAAAARAB0AAgACAAMAAAAQAB4AAgABAAIAAAARAB4AAgACAAIAAAASABcAAgAAAAMAAAATABcAAgABAAMAAAASABgAAgAAAAIAAAASABkAAgAAAAMAAAATABgAAgABAAIAAAATABsAAgABAAMAAAASABwAAgAAAAIAAAASAB0AAgAAAAMAAAATABwAAgABAAIAAAATAB0AAgABAAMAAAASAB4AAgAAAAIAAAATAB4AAgABAAIAAAAUABcAAgACAAMAAAAVABYAAgAAAAIAAAAVABcAAgAAAAMAAAAUABgAAgACAAIAAAAVABgAAgAAAAIAAAAUABsAAgACAAMAAAAVABoAAgAAAAIAAAAVABsAAgAAAAMAAAAUABwAAgACAAIAAAAUAB0AAgACAAMAAAAVABwAAgAAAAIAAAAVAB0AAgAAAAMAAAAUAB4AAgACAAIAAAAVAB4AAgAAAAIAAAAWABYAAgABAAIAAAAWABcAAgABAAMAAAAXABYAAgACAAIAAAAXABcAAgACAAMAAAAWABgAAgABAAIAAAAWABkAAgABAAMAAAAXABgAAgACAAIAAAAXABkAAgACAAMAAAAWABoAAgABAAIAAAAWABsAAgABAAMAAAAXABoAAgACAAIAAAAXABsAAgACAAMAAAAWABwAAgABAAIAAAAWAB0AAgABAAMAAAAXABwAAgACAAIAAAAXAB0AAgACAAMAAAAWAB4AAgABAAIAAAAXAB4AAgACAAIAAAAKABcAAgABAAMAAAAJABcAAgAAAAMAAAAIABcAAgACAAMAAAAHABcAAgABAAMAAAAGABcAAgAAAAMAAAAFABcAAgACAAMAAAAAABgAAgAAAAIAAAAAABkAAgAAAAMAAAAAABoAAgAAAAIAAAAAABsAAgAAAAMAAAAAABcAAgAAAAMAAAAAABwAAgAAAAIAAAAAAB0AAgAAAAMAAAABABwAAgABAAIAAAABABsAAgABAAMAAAABABoAAgABAAIAAAACABkAAgACAAMAAAACABgAAgACAAIAAAABABkAAgABAAMAAAACABwAAgACAAIAAAADABwAAgAAAAIAAAADABsAAgAAAAMAAAAEABsAAgABAAMAAAAFABoAAgACAAIAAAAGABoAAgAAAAIAAAAHABkAAgABAAMAAAAGABkAAgAAAAMAAAAEABoAAgABAAIAAAAAAB4AAgAAAAIAAAABAB0AAgABAAMAAAACAB0AAgACAAMAAAADAB0AAgAAAAMAAAAEABwAAgABAAIAAAAFABwAAgACAAIAAAAGABwAAgAAAAIAAAAHABsAAgABAAMAAAAIABoAAgACAAIAAAAJABoAAgAAAAIAAAAKABoAAgABAAIAAAAHABoAAgABAAIAAAAFABsAAgACAAMAAAABAB4AAgABAAIAAAAEAB0AAgABAAMAAAAFAB0AAgACAAMAAAAHABwAAgABAAIAAAAIABsAAgACAAMAAAAJABsAAgAAAAMAAAAKABsAAgABAAMAAAALABoAAgACAAIAAAAMABoAAgAAAAIAAAANABoAAgABAAIAAAADAB4AAgAAAAIAAAAEAB4AAgABAAIAAAAGAB0AAgAAAAMAAAAIABwAAgACAAIAAAAJABwAAgAAAAIAAAALABsAAgACAAMAAAAMABsAAgAAAAMAAAANABsAAgABAAMAAAAOABsAAgACAAMAAAAPABsAAgAAAAMAAAAQABoAAgABAAIAAAARABoAAgACAAIAAAASABoAAgAAAAIAAAATABoAAgABAAIAAAAUABoAAgACAAIAAAAVABkAAgAAAAMAAAAUABkAAgACAAMAAAATABkAAgABAAMAAAAQABsAAgABAAMAAAALABwAAgACAAIAAAAKABwAAgABAAIAAAAJAB0AAgAAAAMAAAAIAB0AAgACAAMAAAAHAB4AAgABAAIAAAAIAB4AAgACAAIAAAAKAB0AAgABAAMAAAALAB0AAgACAAMAAAAMAB0AAgAAAAMAAAANABwAAgABAAIAAAAOABwAAgACAAIAAAARABsAAgACAAMAAAASABsAAgAAAAMAAAANAB0AAgABAAMAAAAOAB0AAgACAAMAAAAAABYAAgAAAAIAAAABABYAAgABAAIAAAABABcAAgABAAMAAAACABcAAgACAAMAAAADABcAAgAAAAMAAAAEABcAAgABAAMAAAAEABYAAgABAAIAAAADABYAAgAAAAIAAAACABYAAgACAAIAAAAFABYAAgACAAIAAAAGABYAAgAAAAIAAAAHABYAAgABAAIAAAAIABYAAgACAAIAAAAJABYAAgAAAAIAAAAKABYAAgABAAIAAAALABYAAgACAAIAAAAMABYAAgAAAAIAAAANABYAAgABAAIAAAAOABYAAgACAAIAAAAPABYAAgAAAAIAAAAQABYAAgABAAIAAAARABYAAgACAAIAAAASABYAAgAAAAIAAAATABYAAgABAAIAAAAUABYAAgACAAIAAAA=")
+tile_set = SubResource("TileSet_topl8")
+
+[node name="itens" type="TileMapLayer" parent="Environment" unique_id=1088814589]
+z_index = -1
+tile_map_data = PackedByteArray("AAAYABcAAAAOAAAAAAAYABgAAAAOAAEAAAAZABcAAAAPAAAAAAAZABgAAAAPAAEAAAAaABcAAAAMAAAAAAAaABgAAAAMAAEAAAAbABcAAAANAAAAAAAbABgAAAANAAEAAAAYABUAAAAOAAIAAAAYABYAAAAOAAMAAAAZABUAAAAPAAIAAAAZABYAAAAPAAMAAAAaABUAAAAMAAIAAAAaABYAAAAMAAMAAAAbABUAAAANAAIAAAAbABYAAAANAAMAAAAsABMAAAAQAAAAAAAsABQAAAAQAAEAAAAtABMAAAARAAAAAAAtABQAAAARAAEAAAAuABMAAAASAAAAAAAuABQAAAASAAEAAAAvABMAAAATAAAAAAAvABQAAAATAAEAAAATABgAAAAYAAoAAAATABkAAAAYAAsAAAAUABgAAAAZAAoAAAAUABkAAAAUAAAAAAAVABgAAAAaAAoAAAAVABkAAAAVAAAAAAAWABgAAAAbAAoAAAAWABkAAAAbAAsAAAAUABoAAAAUAAEAAAAVABoAAAAVAAEAAAApABYAAAAMAAoAAAApABcAAAAMAAsAAAApABgAAAAMAAwAAAApABkAAAAMAA0AAAAqABYAAAANAAoAAAAqABcAAAANAAsAAAAqABgAAAANAAwAAAAqABkAAAANAA0AAAAPABIAAAAmAAYAAAAPABMAAAAmAAcAAAAQABIAAAAnAAYAAAAQABMAAAAnAAcAAAASABMAAAAkAAIAAAASABQAAAAkAAMAAAATABMAAAAlAAIAAAATABQAAAAlAAMAAAAUABMAAAAmAAIAAAAUABQAAAAmAAMAAAAVABMAAAAnAAIAAAAVABQAAAAnAAMAAAAWABMAAAAoAAIAAAAWABQAAAAoAAMAAAAXABMAAAApAAIAAAAXABQAAAApAAMAAAApABMAAAAWAAIAAAApABQAAAAWAAMAAAAqABMAAAAXAAIAAAAqABQAAAAXAAMAAAAfABMAAAAaAAAAAAAfABQAAAAaAAEAAAAgABMAAAAbAAAAAAAgABQAAAAbAAEAAAAhABMAAAAcAAAAAAAhABQAAAAcAAEAAAAiABMAAAAdAAAAAAAiABQAAAAdAAEAAAA=")
+tile_set = SubResource("TileSet_jg4xt")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="Environment" unique_id=1526004787]
+
+[node name="CollisionShape2D" type="CollisionPolygon2D" parent="Environment/StaticBody2D" unique_id=2143990833]
+polygon = PackedVector2Array(0, 648, 0, 0, 1152, 0, 1152, 648, 960, 384, 192, 384)
+
+[node name="SouthBoundary" type="StaticBody2D" parent="Environment" unique_id=245768202]
+position = Vector2(576, 320)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Environment/SouthBoundary" unique_id=969736130]
+position = Vector2(0, 23)
+shape = SubResource("WorldBoundaryShape2D_8l5cb")
+
+[node name="lateral_esq" type="Polygon2D" parent="Environment" unique_id=1344474845]
+color = Color(0.4221903, 0.51767755, 0.5861585, 1)
+polygon = PackedVector2Array(0, 648, 192, 384, 192, 0, 0, 0)
+
+[node name="lateral_dir" type="Polygon2D" parent="Environment" unique_id=1473464354]
+color = Color(0.42352942, 0.5176471, 0.58431375, 1)
+polygon = PackedVector2Array(1149, 645, 960, 384, 960, 0, 1152, 0)
+
+[node name="WallCenterUp" type="Sprite2D" parent="Environment" unique_id=457437700]
+visible = false
+position = Vector2(576.25, 69.25)
+scale = Vector2(7.573684, 3.1046512)
+texture = SubResource("AtlasTexture_topl8")
+
+[node name="WallCenterDown" type="Sprite2D" parent="Environment" unique_id=1234989209]
+visible = false
+position = Vector2(576, 260)
+scale = Vector2(10.140845, 10.333333)
+texture = SubResource("AtlasTexture_0bvwj")
+
+[node name="WallColumn1" type="Sprite2D" parent="Environment" unique_id=521419945]
+unique_name_in_owner = true
+position = Vector2(204, 192.00002)
+scale = Vector2(3.4285724, 6.095238)
+texture = SubResource("AtlasTexture_8l5cb")
+
+[node name="WallColumn2" type="Sprite2D" parent="Environment" unique_id=1355603680]
+position = Vector2(948.875, 192.25)
+scale = Vector2(3.6785722, 6.0873017)
+texture = SubResource("AtlasTexture_8l5cb")
+flip_h = true
+
+[node name="Window" type="Sprite2D" parent="Environment" unique_id=28150775]
+position = Vector2(576.00006, 199.99998)
+scale = Vector2(5.782051, 5.62)
+texture = SubResource("AtlasTexture_jo7ap")
+
+[node name="Interactables" type="Node2D" parent="." unique_id=248607910]
+
+[node name="ComputerBody" type="StaticBody2D" parent="Interactables" unique_id=445142202]
+position = Vector2(0, -3.0517578e-05)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactables/ComputerBody" unique_id=107665372]
+position = Vector2(352, 401.50003)
+shape = SubResource("RectangleShape2D_8oqth")
+
+[node name="Computer" type="Sprite2D" parent="Interactables" unique_id=1708356408]
+position = Vector2(352.00003, 380)
+scale = Vector2(2.782609, 2.4827583)
+texture = ExtResource("2_t6rqj")
+region_enabled = true
+region_rect = Rect2(386.6046, 161.68971, 59.843933, 29.921951)
+metadata/interaction_label = "Computador"
+
+[node name="ComputerScreen" type="Sprite2D" parent="Interactables/Computer" unique_id=1869271476]
+position = Vector2(-7.1525574e-06, -22.555557)
+scale = Vector2(1.1289061, 1.3055556)
+texture = SubResource("AtlasTexture_7wqc7")
+
+[node name="Sprite2D" type="Sprite2D" parent="Interactables/Computer/ComputerScreen" unique_id=947716540]
+position = Vector2(-26.322926, 32.559444)
+scale = Vector2(1.0328493, 1.1011261)
+texture = SubResource("AtlasTexture_wbm6s")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="Interactables/Computer/ComputerScreen/Sprite2D" unique_id=2140063086]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Interactables/Computer/ComputerScreen/Sprite2D/StaticBody2D" unique_id=1451576057]
+scale = Vector2(0.9999998, 0.9999998)
+polygon = PackedVector2Array(-10.5, -15, -11.5, -13.2, -11.5, 14.799999, 11.5, 15, 11.5, -9.8, 2.3999996, -10, -1.5, -14.7)
+
+[node name="ComputerLabel" type="Label" parent="Interactables" unique_id=27981414]
+offset_left = 252.0
+offset_top = 416.0
+offset_right = 412.0
+offset_bottom = 446.0
+text = "Computador"
+horizontal_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="Ingredients" type="Sprite2D" parent="Interactables" unique_id=1475598403]
+position = Vector2(800, 384)
+rotation = -6.2831855
+scale = Vector2(2.4584408, 2.4990404)
+texture = ExtResource("2_t6rqj")
+region_enabled = true
+region_rect = Rect2(384, 64, 96, 31.995422)
+metadata/interaction_label = "Mesa de ingredientes"
+
+[node name="IngredientsLabel" type="Label" parent="Interactables" unique_id=197942550]
+offset_left = 710.0
+offset_top = 527.0
+offset_right = 876.0
+offset_bottom = 550.0
+text = "Mesa de ingredientes"
+horizontal_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="Portrait" type="Sprite2D" parent="Interactables" unique_id=1891385327]
+position = Vector2(86.99999, 376.99994)
+rotation = -0.93375117
+scale = Vector2(1.83846, 1.9333338)
+skew = 0.9250245
+texture = ExtResource("2_t6rqj")
+region_enabled = true
+region_rect = Rect2(611, 97, 26, 30)
+metadata/interaction_label = "Porta-retrato"
+
+[node name="PortraitLabel" type="Label" parent="Interactables" unique_id=1951241340]
+offset_left = 42.0
+offset_top = 434.0
+offset_right = 202.0
+offset_bottom = 464.0
+text = "Porta-retrato"
+horizontal_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="Door" type="Sprite2D" parent="Interactables" unique_id=1402285385]
+position = Vector2(1114, 538)
+rotation = 0.9424778
+scale = Vector2(2.3, 2.397)
+skew = -0.9424778
+texture = ExtResource("2_t6rqj")
+region_enabled = true
+region_rect = Rect2(195, 242, 42, 46)
+metadata/interaction_label = "Porta"
+
+[node name="DoorLabel" type="Label" parent="Interactables" unique_id=1379910448]
+offset_left = 981.0
+offset_top = 549.0
+offset_right = 1141.0
+offset_bottom = 579.0
+text = "Porta"
+horizontal_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="MesaBody" type="StaticBody2D" parent="Interactables" unique_id=1349046800]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactables/MesaBody" unique_id=256013254]
+position = Vector2(800.5, 400.5)
+shape = SubResource("RectangleShape2D_gvguv")
+
+[node name="PlayerLena" parent="." unique_id=42786179 instance=ExtResource("2_jb4g5")]
+z_index = 1
+position = Vector2(576, 456)
+scale = Vector2(3, 3)
+speed = 300.0
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1629786265]
+position = Vector2(576, 324)
+
+[node name="DialogueManager" parent="." unique_id=213419693 instance=ExtResource("4_dialogue")]

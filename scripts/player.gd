@@ -1,50 +1,31 @@
 extends CharacterBody2D
 
-const SPEED = 100
-var current_dir = "none"
+@export var speed := 100.0
+var current_dir := "down"
 
-func _ready():
+func _ready() -> void:
 	$AnimatedSprite2D.play("front_idle")
+	motion_mode = CharacterBody2D.MOTION_MODE_FLOATING
 
-func _physics_process(delta):
-	player_movement(delta)
-	
-func player_movement(delta):
-	# Add the gravity.
-	if not is_on_floor():
-		velocity += get_gravity() * delta
-
-	# Handle jump.
-	if Input.is_action_pressed("ui_right"):
-		current_dir = "right"
+func _physics_process(_delta: float) -> void:
+	var direction := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
+	velocity = direction * speed
+	if direction != Vector2.ZERO:
+		_update_direction(direction)
 		play_anim(1)
-		velocity.x = SPEED
-		velocity.y = 0
-	elif Input.is_action_pressed("ui_left"):
-		current_dir = "left"
-		play_anim(1)
-		velocity.x = -SPEED
-		velocity.y = 0
-	elif Input.is_action_pressed("ui_down"):
-		current_dir = "down"
-		play_anim(1)
-		velocity.y = SPEED
-		velocity.x = 0
-	elif Input.is_action_pressed("ui_up"):
-		current_dir = "up"
-		play_anim(1)
-		velocity.y = -SPEED
-		velocity.x = 0
-	else: 
+	else:
 		play_anim(0)
-		velocity.x = 0
-		velocity.y = 0
-
 	move_and_slide()
 	
-func play_anim(movement):
-	var dir = current_dir
-	var anim = $AnimatedSprite2D
+func _update_direction(direction: Vector2) -> void:
+	if abs(direction.x) > abs(direction.y):
+		current_dir = "right" if direction.x > 0 else "left"
+	else:
+		current_dir = "down" if direction.y > 0 else "up"
+
+func play_anim(movement: int) -> void:
+	var dir := current_dir
+	var anim: AnimatedSprite2D = $AnimatedSprite2D
 	
 	if dir == "right":
 		anim.flip_h = false

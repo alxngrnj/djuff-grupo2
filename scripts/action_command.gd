@@ -2,46 +2,58 @@ class_name ActionCommand
 extends CanvasLayer
 ## Action Commands estilo Paper Mario (Godot 4.x).
 ##
-## Não precisa de cena: a interface é criada por código.
-## Basta adicionar este script a um nó CanvasLayer dentro da cena de batalha
-## e criar a ação "confirmar" em Projeto > Configurações do Projeto > Mapa de Entrada.
+## A interface é criada por código. Quem usa (a cena de batalha) diz quais botões
+## valem com set_buttons([...]) antes de chamar um command.
 ##
-## Tipos de command:
-##   timing_barra()         -> barra com cursor e zona de acerto (ataques simples)
-##   timing_sincronizado()  -> aperta na hora do impacto da animação (pulo, martelada)
+##   timing_barra()         -> barra com cursor e zona de acerto
+##   timing_sincronizado()  -> aperta na hora do impacto de uma animação/pulo
 ##   defender()             -> aperta um pouco ANTES do golpe inimigo (guard)
-##   apertar_varias()       -> mash de botão (golpes especiais)
+##   apertar_varias()       -> mash de botão (retorna Resultado; veja ultima_proporcao)
 
 enum Resultado { ERRO, BOM, PERFEITO }
 
-const ACAO := "confirmar"
-const LARGURA := 420.0
-const ALTURA := 26.0
+const LARGURA := 360.0
+const ALTURA := 22.0
 const TIMEOUT := 5.0 # segurança: nunca trava se o sinal de impacto não vier
 
-## Posição na tela (em pixels) onde aparece o "!" de alerta.
-## Ajuste para ficar em cima do inimigo.
-@export var posicao_alerta := Vector2(576, 180)
+## Camada de desenho (precisa ser maior que a da cena que a usa).
+@export var camada: int = 100
+## Distância da barra até o topo da tela.
+@export var margem_topo: float = 26.0
+## Posição (em pixels da tela) do "!" de alerta. Ajuste antes de piscar_alerta().
+@export var posicao_alerta: Vector2 = Vector2(320.0, 120.0)
+
+## Proporção (0.0 a 1.0) alcançada no último apertar_varias().
+var ultima_proporcao: float = 0.0
+## Ações do InputMap que contam como "aperto" neste momento.
+var acoes_entrada: Array[String] = ["battle_btn_a", "battle_btn_b", "battle_btn_x", "battle_btn_y"]
 
 var _raiz: Control
 var _barra: ColorRect
 var _zona_boa: ColorRect
 var _zona_perfeita: ColorRect
 var _cursor: ColorRect
+var _progresso: ColorRect
 var _alerta: Label
 var _texto: Label
 var _t_impacto := -1.0
 
 
 func _ready() -> void:
-	layer = 10
+	layer = camada
 	_construir_ui()
 	_esconder_tudo()
 
 
+## Define quais ações do InputMap valem como aperto.
+func set_buttons(botoes: Array) -> void:
+	acoes_entrada.clear()
+	for b in botoes:
+		acoes_entrada.append(str(b))
+
+
 # ---------------------------------------------------------------------------
 # 1) TIMING EM BARRA
-# Um cursor atravessa a barra. Aperte quando estiver na zona dourada.
 # ---------------------------------------------------------------------------
 func timing_barra(
 		duracao := 1.2,
@@ -52,18 +64,23 @@ func timing_barra(
 	_posicionar()
 	_configurar_zona(_zona_boa, centro, meia_boa)
 	_configurar_zona(_zona_perfeita, centro, meia_perfeita)
+	_zona_boa.show()
+	_zona_perfeita.show()
+	_progresso.hide()
+	_cursor.show()
 	_cursor.position.x = -_cursor.size.x / 2.0
 	_barra.show()
 
 	var resultado := Resultado.ERRO
+	var frame_inicio := Engine.get_process_frames()
 	var inicio := _agora()
 	while true:
-		await get_tree().process_frame # espera 1 frame: ignora o aperto do menu
+		await get_tree().process_frame
 		var p := (_agora() - inicio) / duracao
 		if p > 1.0:
 			break
 		_cursor.position.x = p * LARGURA - _cursor.size.x / 2.0
-		if Input.is_action_just_pressed(ACAO):
+		if _pressionou(frame_inicio):
 			var d := absf(p - centro)
 			if d <= meia_perfeita:
 				resultado = Resultado.PERFEITO
@@ -78,8 +95,8 @@ func timing_barra(
 
 # ---------------------------------------------------------------------------
 # 2) TIMING SINCRONIZADO COM ANIMAÇÃO
-# O AnimationPlayer emite um sinal no frame do impacto (Call Method Track).
-# O jogador aperta perto desse momento (antes ou depois, dentro da margem).
+# Chame ANTES do impacto. O resultado sai assim que o aperto E o impacto
+# aconteceram (não precisa esperar a janela inteira).
 # ---------------------------------------------------------------------------
 func timing_sincronizado(
 		impacto: Signal,
@@ -90,13 +107,16 @@ func timing_sincronizado(
 	impacto.connect(_ao_impacto, CONNECT_ONE_SHOT)
 
 	var t_aperto := -1.0
+	var frame_inicio := Engine.get_process_frames()
 	var inicio := _agora()
 	while _agora() - inicio < TIMEOUT:
 		await get_tree().process_frame
-		if t_aperto < 0.0 and Input.is_action_just_pressed(ACAO):
+		if t_aperto < 0.0 and _pressionou(frame_inicio):
 			t_aperto = _agora()
+		if _t_impacto >= 0.0 and t_aperto >= 0.0:
+			break # já dá para julgar
 		if _t_impacto >= 0.0 and _agora() > _t_impacto + meia_boa:
-			break # passou da janela, não adianta esperar mais
+			break # passou da janela e ninguém apertou
 
 	_desconectar(impacto)
 
@@ -114,8 +134,8 @@ func timing_sincronizado(
 
 # ---------------------------------------------------------------------------
 # 3) DEFESA (GUARD)
-# Aperte um pouco ANTES do golpe acertar. Apertar cedo demais ou tarde
-# demais não funciona, como no Paper Mario.
+# Aperte um pouco ANTES do golpe acertar. Só o PRIMEIRO aperto conta:
+# apertar cedo demais (ou martelar o botão) não funciona.
 # ---------------------------------------------------------------------------
 func defender(
 		impacto: Signal,
@@ -126,10 +146,11 @@ func defender(
 	impacto.connect(_ao_impacto, CONNECT_ONE_SHOT)
 
 	var t_aperto := -1.0
+	var frame_inicio := Engine.get_process_frames()
 	var inicio := _agora()
 	while _t_impacto < 0.0 and _agora() - inicio < TIMEOUT:
 		await get_tree().process_frame
-		if t_aperto < 0.0 and Input.is_action_just_pressed(ACAO):
+		if t_aperto < 0.0 and _pressionou(frame_inicio):
 			t_aperto = _agora()
 
 	_desconectar(impacto)
@@ -148,12 +169,21 @@ func defender(
 
 # ---------------------------------------------------------------------------
 # 4) MASH DE BOTÃO
-# Retorna de 0.0 a 1.0 (1.0 = bateu a meta). Use como multiplicador de dano.
+# Retorna PERFEITO (bateu a meta), BOM (>= metade) ou ERRO.
+# A proporção exata fica em ultima_proporcao.
 # ---------------------------------------------------------------------------
-func apertar_varias(duracao := 2.0, meta := 15) -> float:
+func apertar_varias(duracao := 2.0, meta := 12) -> Resultado:
 	_posicionar()
 	var contagem := 0
+	var frame_inicio := Engine.get_process_frames()
 	var inicio := _agora()
+
+	_zona_boa.hide()
+	_zona_perfeita.hide()
+	_cursor.hide()
+	_progresso.size.x = 0.0
+	_progresso.show()
+	_barra.show()
 	_texto.modulate.a = 1.0
 	_texto.add_theme_color_override("font_color", Color.WHITE)
 	_texto.text = "0 / %d" % meta
@@ -161,23 +191,29 @@ func apertar_varias(duracao := 2.0, meta := 15) -> float:
 
 	while _agora() - inicio < duracao:
 		await get_tree().process_frame
-		if Input.is_action_just_pressed(ACAO):
+		if _pressionou(frame_inicio):
 			contagem += 1
 			_texto.text = "%d / %d" % [contagem, meta]
+			_progresso.size.x = LARGURA * clampf(float(contagem) / float(meta), 0.0, 1.0)
 
+	_barra.hide()
+	_progresso.hide()
 	_texto.hide()
-	var proporcao := clampf(float(contagem) / float(meta), 0.0, 1.0)
-	_mostrar_resultado(Resultado.PERFEITO if proporcao >= 1.0 else
-			(Resultado.BOM if proporcao >= 0.5 else Resultado.ERRO))
-	return proporcao
+	ultima_proporcao = clampf(float(contagem) / float(meta), 0.0, 1.0)
+	var resultado := Resultado.ERRO
+	if ultima_proporcao >= 1.0:
+		resultado = Resultado.PERFEITO
+	elif ultima_proporcao >= 0.5:
+		resultado = Resultado.BOM
+	_mostrar_resultado(resultado)
+	return resultado
 
 
 # ---------------------------------------------------------------------------
-# "!" de alerta: chame na hora em que o inimigo vai atacar
-# (por exemplo, com uma Call Method Track na animação do inimigo).
+# "!" de alerta (chame quando o inimigo começa a se preparar para atacar).
 # ---------------------------------------------------------------------------
 func piscar_alerta(duracao := 0.3) -> void:
-	_alerta.position = posicao_alerta
+	_alerta.position = posicao_alerta - Vector2(8.0, 34.0)
 	_alerta.show()
 	var tw := create_tween()
 	tw.tween_interval(duracao)
@@ -187,6 +223,17 @@ func piscar_alerta(duracao := 0.3) -> void:
 # ===========================================================================
 # Internos
 # ===========================================================================
+## frame_ignorado: um aperto no MESMO frame em que o command começou é o aperto
+## que escolheu a ação, então não conta.
+func _pressionou(frame_ignorado: int) -> bool:
+	if Engine.get_process_frames() == frame_ignorado:
+		return false
+	for acao in acoes_entrada:
+		if Input.is_action_just_pressed(acao):
+			return true
+	return false
+
+
 func _ao_impacto() -> void:
 	_t_impacto = _agora()
 
@@ -207,8 +254,8 @@ func _configurar_zona(zona: ColorRect, centro: float, meia: float) -> void:
 
 func _posicionar() -> void:
 	var vp := get_viewport().get_visible_rect().size
-	_barra.position = Vector2((vp.x - LARGURA) / 2.0, vp.y - 110.0)
-	_texto.position = Vector2((vp.x - _texto.size.x) / 2.0, vp.y / 2.0 - 60.0)
+	_barra.position = Vector2((vp.x - LARGURA) / 2.0, margem_topo)
+	_texto.position = Vector2((vp.x - _texto.size.x) / 2.0, margem_topo + ALTURA + 6.0)
 
 
 func _mostrar_resultado(r: Resultado) -> void:
@@ -236,7 +283,6 @@ func _esconder_tudo() -> void:
 
 func _construir_ui() -> void:
 	_raiz = Control.new()
-	_raiz.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_raiz.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_raiz)
 
@@ -253,24 +299,31 @@ func _construir_ui() -> void:
 	_zona_perfeita.color = Color.GOLD
 	_barra.add_child(_zona_perfeita)
 
+	_progresso = ColorRect.new()
+	_progresso.color = Color(1.0, 0.6, 0.15)
+	_progresso.size = Vector2(0.0, ALTURA)
+	_barra.add_child(_progresso)
+
 	_cursor = ColorRect.new()
 	_cursor.color = Color.WHITE
-	_cursor.size = Vector2(6.0, ALTURA + 12.0)
-	_cursor.position.y = -6.0
+	_cursor.size = Vector2(4.0, ALTURA + 10.0)
+	_cursor.position.y = -5.0
 	_barra.add_child(_cursor)
 
 	_alerta = Label.new()
 	_alerta.text = "!"
-	_alerta.add_theme_font_size_override("font_size", 72)
+	_alerta.z_index = 10
+	_alerta.add_theme_font_size_override("font_size", 40)
 	_alerta.add_theme_color_override("font_color", Color.RED)
 	_alerta.add_theme_color_override("font_outline_color", Color.WHITE)
-	_alerta.add_theme_constant_override("outline_size", 10)
+	_alerta.add_theme_constant_override("outline_size", 8)
 	_raiz.add_child(_alerta)
 
 	_texto = Label.new()
-	_texto.size = Vector2(400.0, 60.0)
+	_texto.custom_minimum_size = Vector2(300.0, 0.0)
+	_texto.size = Vector2(300.0, 30.0)
 	_texto.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_texto.add_theme_font_size_override("font_size", 40)
+	_texto.add_theme_font_size_override("font_size", 22)
 	_texto.add_theme_color_override("font_outline_color", Color.BLACK)
-	_texto.add_theme_constant_override("outline_size", 8)
+	_texto.add_theme_constant_override("outline_size", 6)
 	_raiz.add_child(_texto)

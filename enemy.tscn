@@ -1,8 +1,4 @@
-
 [gd_scene format=3 uid="uid://cbxxf7nhljxd1"]
-
-
-
 
 [ext_resource type="Script" uid="uid://dys4kj25y0150" path="res://enemy.gd" id="1_4gyqm"]
 [ext_resource type="Texture2D" uid="uid://d3w1bk1pcx4jc" path="res://assets/mystic_woods_free_2.2/sprites/characters/slime.png" id="1_7k104"]
@@ -152,10 +148,6 @@ collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="detection_area" unique_id=173143590]
 shape = SubResource("CircleShape2D_jg4xt")
-
-
-[node name="CollisionShape2D2" type="CollisionShape2D" parent="." unique_id=1659890987]
-position = Vector2(0, -4)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1659890987]
 position = Vector2(0, -3)

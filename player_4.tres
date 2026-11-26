@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BattlerData" format=3 uid="uid://owvynfr74va5"]
+
+[ext_resource type="Resource" uid="uid://qtqrrpuknvwl" path="res://atack_curar.tres" id="1_e1xqr"]
+[ext_resource type="Script" uid="uid://cv06yo5kw3vld" path="res://scripts/battle/battler_data.gd" id="1_tcdyp"]
+[ext_resource type="Texture2D" uid="uid://cqctk8i3ys8r5" path="res://assets/mystic_woods_free_2.2/sprites/characters/sprite_teste.tres" id="2_des4h"]
+
+[resource]
+script = ExtResource("1_tcdyp")
+nome = "Lena"
+textura = ExtResource("2_des4h")
+hp_max = 11
+fp_max = 6
+ataque = ExtResource("1_e1xqr")
+metadata/_custom_type_script = "uid://cv06yo5kw3vld"
