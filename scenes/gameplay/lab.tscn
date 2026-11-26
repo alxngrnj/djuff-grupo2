@@ -646,13 +646,11 @@ color = Color(0.42352942, 0.5176471, 0.58431375, 1)
 polygon = PackedVector2Array(1149, 645, 960, 384, 960, 0, 1152, 0)
 
 [node name="WallCenterUp" type="Sprite2D" parent="Environment" unique_id=457437700]
-visible = false
 position = Vector2(576.25, 69.25)
 scale = Vector2(7.573684, 3.1046512)
 texture = SubResource("AtlasTexture_topl8")
 
 [node name="WallCenterDown" type="Sprite2D" parent="Environment" unique_id=1234989209]
-visible = false
 position = Vector2(576, 260)
 scale = Vector2(10.140845, 10.333333)
 texture = SubResource("AtlasTexture_0bvwj")

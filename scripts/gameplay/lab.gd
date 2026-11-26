@@ -1,6 +1,6 @@
 extends Node2D
 
-const NEXT_SCENE := "res://scenes/world.tscn"
+const NEXT_SCENE := "res://scenes/cutscenes/road/cutscene_transition.tscn"
 
 var friends_called: Array[String] = []
 var supplies_collected := false
