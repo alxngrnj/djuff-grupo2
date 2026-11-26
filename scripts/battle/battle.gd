@@ -64,6 +64,7 @@ const PARTY_TEST_TINTS: Array[Color] = [
 const SWORD_HIT_TIME := 0.125 # frame 1 da animação de ataque a 8 fps
 const FP_REGEN_PER_TURN := 1
 const DEATH_TIME := 0.95
+const STAGE_ZOOM := 2 # NOVO: controle o zoom da batalha aqui (ex: 1.5 a 1.8)
 
 const SLOT_COLOR := Color(0.05, 0.07, 0.12, 0.85)
 const BUTTON_COLORS := {
@@ -168,7 +169,7 @@ func _run_battle() -> void:
 func _intro() -> void:
 	_fade_rect.modulate.a = 1.0
 	for e in enemies:
-		e.position.y = -40.0
+		e.position.x = -140.0 # ALTERADO: antes era -40.0
 	_fade(0.0, 0.4)
 	for e in enemies:
 		e.move_to(e.home_position, 0.6)
@@ -247,9 +248,10 @@ func _wait_for_action() -> int:
 func _unhandled_input(event: InputEvent) -> void:
 	if _state != State.WAIT_PLAYER:
 		return
-	if event.is_action_pressed("ui_left"):
+	# ALTERADO: aceita cima/baixo além de esquerda/direita para navegar na coluna
+	if event.is_action_pressed("ui_left") or event.is_action_pressed("ui_up"):
 		_change_target(-1)
-	elif event.is_action_pressed("ui_right"):
+	elif event.is_action_pressed("ui_right") or event.is_action_pressed("ui_down"):
 		_change_target(1)
 	else:
 		for btn: String in PlayerData.BUTTONS:
@@ -305,7 +307,8 @@ func _do_jump(action: BattleAction) -> void:
 	var target := _selected_enemy()
 	if target == null:
 		return
-	await player.move_to(target.position + Vector2(0.0, 64.0), 0.45)
+	# ALTERADO: para 64px à DIREITA do inimigo (eixo X) antes de saltar sobre ele
+	await player.move_to(target.position + Vector2(64.0, 0.0), 0.45)
 	player.hold_pose("attack", 0)
 	var land := target.position + Vector2(0.0, -target.head_height)
 	# Sem await: o pulo acontece enquanto o command espera o aperto.
@@ -323,7 +326,8 @@ func _do_melee(action: BattleAction) -> void:
 	var target := _selected_enemy()
 	if target == null:
 		return
-	await player.move_to(target.position + Vector2(0.0, 32.0), 0.4)
+	# ALTERADO: aproxima no eixo X, parando 32px à DIREITA do inimigo
+	await player.move_to(target.position + Vector2(32.0, 0.0), 0.4)
 	player.play_anim("idle")
 	var result: ActionCommand.Resultado = await _command.timing_barra(1.1, 0.72, 0.045, 0.11)
 	player.play_anim("attack")
@@ -395,9 +399,11 @@ func _enemy_attack(e: Battler) -> void:
 	var victim: Battler = _pick_victim()
 	if victim == null:
 		return
-	var contact := victim.position + Vector2(0.0, -26.0)
+	# ALTERADO: inimigo para 26px à ESQUERDA do aliado ao atacar
+	var contact := victim.position + Vector2(-26.0, 0.0)
 	_command.set_buttons(PlayerData.BUTTONS) # qualquer botão de batalha defende
-	_command.posicao_alerta = e.position + Vector2(0.0, -(e.head_height + 20.0))
+	# ALTERADO: usa to_global() para o alerta acompanhar o zoom do palco
+	_command.posicao_alerta = _stage.to_global(e.position + Vector2(0.0, -(e.head_height + 20.0)))
 	_command.piscar_alerta(e.data.windup)
 	await e.squash(e.data.windup)
 	# Sem await: o salto acontece enquanto o jogador tenta defender.
@@ -481,12 +487,13 @@ func _resolve_deaths() -> void:
 
 
 func _shake(strength: float, duration: float) -> void:
+	var base := _stage_base_pos() # NOVO: guarda a posição base do zoom
 	var tw := create_tween()
 	var steps := 6
 	for i in steps:
 		var off := Vector2(randf_range(-strength, strength), randf_range(-strength, strength))
-		tw.tween_property(_stage, "position", off, duration / steps)
-	tw.tween_property(_stage, "position", Vector2.ZERO, 0.03)
+		tw.tween_property(_stage, "position", base + off, duration / steps) # ALTERADO
+	tw.tween_property(_stage, "position", base, 0.03) # ALTERADO
 
 
 func _hitstop(duration: float) -> void:
@@ -519,7 +526,8 @@ func _fire_projectile(target: Battler) -> void:
 	shot.polygon = points
 	shot.color = Color(1.0, 0.65, 0.15)
 	shot.z_index = 70
-	shot.position = player.position + Vector2(0.0, -player.head_height)
+	# ALTERADO: projétil sai da frente do personagem (esquerda) na altura do torso
+	shot.position = player.position + Vector2(-16.0, -player.head_height * 0.6)
 	_stage.add_child(shot)
 	var end := target.position + Vector2(0.0, -target.head_height * 0.5)
 	var tw := shot.create_tween()
@@ -533,11 +541,15 @@ func _fire_projectile(target: Battler) -> void:
 func _wait(seconds: float) -> void:
 	await get_tree().create_timer(seconds).timeout
 
+## ALTERADO: substitui _row_x. Calcula o Y para alinhar em coluna acima da HUD.
+func _col_y(i: int, count: int, spacing: float) -> float:
+	var floor_center_y := (_vp.y - 78.0) * 0.585
+	return floor_center_y + (i - (count - 1) / 2.0) * spacing
 
-## Posição x da i-ésima pessoa de uma fileira de "count", centralizada na tela.
-func _row_x(i: int, count: int, spacing: float) -> float:
-	return _vp.x * 0.5 + (i - (count - 1) / 2.0) * spacing
-
+## NOVO: calcula o deslocamento para o zoom ficar centrado acima da HUD.
+func _stage_base_pos() -> Vector2:
+	var focus := Vector2(_vp.x * 0.5, (_vp.y - 78.0) * 0.5)
+	return focus * (1.0 - STAGE_ZOOM)
 
 func _alive_party() -> Array[Battler]:
 	var result: Array[Battler] = []
@@ -610,25 +622,38 @@ func _build_layers() -> void:
 	_canvas = CanvasLayer.new()
 	_canvas.layer = 20
 	add_child(_canvas)
+	
+	
 
 	# Chão visto de cima: um gramado na tela inteira, com tufos de grama.
-	var grass := ColorRect.new()
-	grass.color = Color(0.36, 0.64, 0.30)
-	grass.size = _vp
-	_canvas.add_child(grass)
-	var rng := RandomNumberGenerator.new()
-	rng.seed = 7
-	for i in 70:
-		var tuft := ColorRect.new()
-		tuft.color = Color(0.30, 0.56, 0.25) if i % 2 == 0 else Color(0.42, 0.70, 0.35)
-		tuft.size = Vector2(rng.randi_range(4, 9), 2.0)
-		tuft.position = Vector2(rng.randf_range(0.0, _vp.x), rng.randf_range(0.0, _vp.y))
-		_canvas.add_child(tuft)
+	#var grass := ColorRect.new()
+	#grass.color = Color(0.36, 0.64, 0.30)
+	#grass.size = _vp
+	#_canvas.add_child(grass)
+	#var rng := RandomNumberGenerator.new()
+	#rng.seed = 7
+	#for i in 70:
+		#var tuft := ColorRect.new()
+		#tuft.color = Color(0.30, 0.56, 0.25) if i % 2 == 0 else Color(0.42, 0.70, 0.35)
+		#tuft.size = Vector2(rng.randi_range(4, 9), 2.0)
+		#tuft.position = Vector2(rng.randf_range(0.0, _vp.x), rng.randf_range(0.0, _vp.y))
+		#_canvas.add_child(tuft)
 
 
 	_stage = Node2D.new()
 	_stage.y_sort_enabled = true
+	_stage.scale = Vector2.ONE * STAGE_ZOOM # NOVO: aplica o zoom no palco
+	_stage.position = _stage_base_pos()     # NOVO: centraliza o zoom na arena
 	_canvas.add_child(_stage)
+	
+	# NOVO: substitui o gramado verde pela cena de fundo.
+	var arena_path: String = encounter.get_meta("arena_scene", "res://scenes/battle/battle_arena.tscn")
+	if ResourceLoader.exists(arena_path):
+		var arena: Node2D = load(arena_path).instantiate()
+		arena.z_index = -10 # mantém o cenário atrás dos personagens (0) e do cursor (60)
+		_stage.add_child(arena)
+	else:
+		push_warning("Cenário não encontrado em: " + arena_path)
 
 	_cursor = Polygon2D.new()
 	_cursor.polygon = PackedVector2Array([Vector2(-6.0, -9.0), Vector2(6.0, -9.0), Vector2(0.0, 0.0)])
@@ -811,8 +836,11 @@ func _spawn_party() -> void:
 		m.max_fp = d.fp_max
 		m.fp = clampi(PlayerData.party_fp[i], 0, d.fp_max)
 		m.defense = PlayerData.defense
-		m.head_height = 21.0
-		m.home_position = Vector2(_row_x(i, count, 100.0), _vp.y * 0.70)
+		m.head_height = 21.0	
+		# ALTERADO: equipe em coluna vertical no lado DIREITO (78% da largura)
+		# ALTERADO: mais próximos do centro (0.64) e mais espaçados verticalmente (62.0)
+		# ALTERADO: espaçamento 46.0 mantém os 4 personagens dentro dos 2/3 de chão
+		m.home_position = Vector2(_vp.x * 0.64, _col_y(i, count, 46.0))
 		m.position = m.home_position
 		_stage.add_child(m)
 
@@ -822,10 +850,15 @@ func _spawn_party() -> void:
 		var tint: Color = d.tint
 		if d.sheet == null:
 			tint = PARTY_TEST_TINTS[i]
-		m.setup_sprite(SpriteSheet.build_frames(sheet, PLAYER_FRAME_SIZE, PLAYER_ANIMS_UP), -19.0, false, tint)
+		# ALTERADO: usa PLAYER_ANIMS (lateral) com flip_h = true para olhar à esquerda
+		m.setup_sprite(SpriteSheet.build_frames(sheet, PLAYER_FRAME_SIZE, PLAYER_ANIMS), -19.0, true, tint)
+		
 		m.create_hp_bar(28.0, 3.0) # barrinha de vida embaixo dos pés
-		var name_label := _make_label(m, d.nome, 9, Color.WHITE, Vector2(-30.0, 9.0))
-		name_label.custom_minimum_size = Vector2(60.0, 0.0)
+		# ALTERADO: renderiza a fonte maior e aplica escala inversa para não pixelar com o zoom
+		var name_label := _make_label(m, d.nome, roundi(9 * STAGE_ZOOM), Color.WHITE, Vector2(-30.0, 9.0))
+		name_label.custom_minimum_size = Vector2(60.0 * STAGE_ZOOM, 0.0)
+		name_label.scale = Vector2.ONE / STAGE_ZOOM
+		name_label.add_theme_constant_override("outline_size", roundi(3 * STAGE_ZOOM))
 		name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		m.hp_changed.connect(_refresh_hud)
 		party.append(m)
@@ -833,7 +866,8 @@ func _spawn_party() -> void:
 
 
 func _spawn_enemies() -> void:
-	var slime_frames := _make_frames(SLIME_TEXTURE, 32, SLIME_ANIMS_DOWN)
+	# ALTERADO: usa SLIME_ANIMS (lateral) olhando para a direita
+	var slime_frames := _make_frames(SLIME_TEXTURE, 32, SLIME_ANIMS)
 	var count := encounter.enemy_ids.size()
 	for i in count:
 		var data: EnemyData = EnemyDatabase.get_enemy(encounter.enemy_ids[i])
@@ -847,9 +881,13 @@ func _spawn_enemies() -> void:
 		e.attack = data.attack
 		e.defense = data.defense + def_bonus
 		e.head_height = 12.0 * data.sprite_scale
-		e.home_position = Vector2(_row_x(i, count, 80.0), _vp.y * 0.27 + (i % 2) * 14.0)
+		# ALTERADO: inimigos em coluna vertical no lado ESQUERDO (24% da largura)
+		# ALTERADO: mais próximos do centro (0.36) e mais espaçados verticalmente (72.0)
+		# ALTERADO: espaçamento 54.0 mantém os inimigos e barras de HP dentro do chão
+		e.home_position = Vector2(_vp.x * 0.36 - (i % 2) * 24.0, _col_y(i, count, 54.0))
 		e.position = e.home_position
 		_stage.add_child(e)
+		
 		e.setup_sprite(slime_frames, -8.0, false, data.tint, data.sprite_scale)
 		e.create_hp_bar(28.0, -(e.head_height + 8.0))
 		enemies.append(e)
