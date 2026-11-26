@@ -706,6 +706,7 @@ scale = Vector2(0.9999998, 0.9999998)
 polygon = PackedVector2Array(-10.5, -15, -11.5, -13.2, -11.5, 14.799999, 11.5, 15, 11.5, -9.8, 2.3999996, -10, -1.5, -14.7)
 
 [node name="ComputerLabel" type="Label" parent="Interactables" unique_id=27981414]
+visible = false
 offset_left = 252.0
 offset_top = 416.0
 offset_right = 412.0
@@ -724,6 +725,7 @@ region_rect = Rect2(384, 64, 96, 31.995422)
 metadata/interaction_label = "Mesa de ingredientes"
 
 [node name="IngredientsLabel" type="Label" parent="Interactables" unique_id=197942550]
+visible = false
 offset_left = 710.0
 offset_top = 527.0
 offset_right = 876.0
@@ -743,6 +745,7 @@ region_rect = Rect2(611, 97, 26, 30)
 metadata/interaction_label = "Porta-retrato"
 
 [node name="PortraitLabel" type="Label" parent="Interactables" unique_id=1951241340]
+visible = false
 offset_left = 42.0
 offset_top = 434.0
 offset_right = 202.0
@@ -762,6 +765,7 @@ region_rect = Rect2(195, 242, 42, 46)
 metadata/interaction_label = "Porta"
 
 [node name="DoorLabel" type="Label" parent="Interactables" unique_id=1379910448]
+visible = false
 offset_left = 981.0
 offset_top = 549.0
 offset_right = 1141.0

@@ -2,10 +2,17 @@
 
 [ext_resource type="PackedScene" uid="uid://b1uvy13de6svk" path="res://scenes/cutscenes/road/cutscene_transition.tscn" id="1_3ovsr"]
 [ext_resource type="Script" uid="uid://cv6osrygr751o" path="res://scripts/main_menu/version_label.gd" id="1_5huni"]
+[ext_resource type="FontFile" uid="uid://66ax5md5lblx" path="res://assets/fonts/Cyberphont/Cyberphont 2.0.ttf" id="2_4xg86"]
 [ext_resource type="PackedScene" uid="uid://bdnyglk1i1cxl" path="res://scenes/gameplay/gameplay.tscn" id="2_5nvqq"]
 [ext_resource type="Script" uid="uid://bcf4es74ellju" path="res://scripts/main_menu/menu_options.gd" id="2_gpv3d"]
 [ext_resource type="PackedScene" uid="uid://dpicmplffpula" path="res://scenes/settings/settings.tscn" id="3_2osu0"]
 [ext_resource type="PackedScene" uid="uid://cee5dna3u27jf" path="res://scenes/assets/select_sfx.tscn" id="4_82nwe"]
+[ext_resource type="Texture2D" uid="uid://73ws0btvn6c5" path="res://assets/Free-GUI-for-Cyberpunk-Pixel-Art1/BarsAndOther.png" id="7_thkx5"]
+[ext_resource type="FontFile" uid="uid://bgmokmv2l4mq5" path="res://assets/Free-GUI-for-Cyberpunk-Pixel-Art1/CyberpunkCraftpixPixel.otf" id="8_thkx5"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_topl8"]
+atlas = ExtResource("7_thkx5")
+region = Rect2(135.82346, 10.855301, 32.35327, 14.275034)
 
 [node name="MainMenu" type="Control" unique_id=40507463]
 layout_mode = 3
@@ -23,16 +30,35 @@ layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -65.5
-offset_top = 93.0
-offset_right = 65.5
-offset_bottom = 135.0
+offset_left = -63.0
+offset_top = 42.0
+offset_right = 207.0
+offset_bottom = 132.0
 grow_horizontal = 2
 theme_type_variation = &"HeaderLarge"
-text = "YOUR GAME"
+theme_override_fonts/font = ExtResource("2_4xg86")
+theme_override_font_sizes/font_size = 45
+text = "crafting"
+horizontal_alignment = 1
+
+[node name="Title2" type="Label" parent="." unique_id=1681747276]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = 196.0
+offset_top = 91.0
+offset_right = 466.0
+offset_bottom = 181.0
+grow_horizontal = 2
+theme_type_variation = &"HeaderLarge"
+theme_override_fonts/font = ExtResource("2_4xg86")
+theme_override_font_sizes/font_size = 45
+text = "ANARCHY"
 horizontal_alignment = 1
 
 [node name="Credit" type="Label" parent="." unique_id=1519769652]
+visible = false
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -45,18 +71,20 @@ grow_horizontal = 2
 text = "A game by YOU"
 
 [node name="Controls" type="Label" parent="." unique_id=350098711]
+visible = false
 layout_mode = 0
 offset_left = 843.0
 offset_top = 573.0
 offset_right = 1251.0
 offset_bottom = 677.0
-text = "CONTROLS
-Move: WASD | Accept: J | Cancel: K | Pause: P
+text = "CONTROLES
+Movee: WASD | Accept: J | Cancel: K | Pause: P
 Move: Arrow Keys | Accept: Z | Cancel: Z | Pause: Esc
 Gamepads work too!"
 horizontal_alignment = 2
 
 [node name="Instructions" type="Label" parent="." unique_id=2126603546]
+visible = false
 layout_mode = 0
 offset_left = 54.0
 offset_top = 570.0
@@ -84,35 +112,70 @@ offset_right = 162.0
 offset_bottom = 49.0
 text = "Debug UI enabled"
 
-[node name="MenuOptions" type="VFlowContainer" parent="." unique_id=1005807653 node_paths=PackedStringArray("shortcut_context")]
+[node name="MenuOptions" type="VFlowContainer" parent="." unique_id=1777760578]
 layout_mode = 1
 anchors_preset = 13
 anchor_left = 0.5
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -35.0
-offset_top = 192.0
-offset_right = 36.0
-offset_bottom = -9.0
+offset_left = -63.0
+offset_top = 126.0
+offset_right = 201.0
+offset_bottom = -264.0
 grow_horizontal = 2
 grow_vertical = 2
-shortcut_context = NodePath("Start")
 alignment = 1
 script = ExtResource("2_gpv3d")
 gameplay_scene = ExtResource("2_5nvqq")
 settings_scene = ExtResource("3_2osu0")
 
-[node name="Start" type="Button" parent="MenuOptions" unique_id=1943695896]
+[node name="Start" type="TextureButton" parent="MenuOptions" unique_id=1419657157]
+custom_minimum_size = Vector2(149, 52)
 layout_mode = 2
-text = "Start"
+texture_normal = SubResource("AtlasTexture_topl8")
+stretch_mode = 0
 
-[node name="Settings" type="Button" parent="MenuOptions" unique_id=2091879403]
-layout_mode = 2
-text = "Settings"
+[node name="Label" type="Label" parent="MenuOptions/Start" unique_id=1123565375]
+layout_mode = 0
+offset_left = 18.0
+offset_top = 28.0
+offset_right = 101.0
+offset_bottom = 54.0
+theme_override_fonts/font = ExtResource("8_thkx5")
+theme_override_font_sizes/font_size = 20
+text = "START"
 
-[node name="Quit" type="Button" parent="MenuOptions" unique_id=1771303748]
+[node name="Settings" type="TextureButton" parent="MenuOptions" unique_id=1071560127]
+custom_minimum_size = Vector2(149, 52)
 layout_mode = 2
-text = "Quit"
+texture_normal = SubResource("AtlasTexture_topl8")
+stretch_mode = 0
+
+[node name="Label" type="Label" parent="MenuOptions/Settings" unique_id=782500047]
+layout_mode = 0
+offset_left = 18.0
+offset_top = 28.0
+offset_right = 123.0
+offset_bottom = 54.0
+theme_override_fonts/font = ExtResource("8_thkx5")
+theme_override_font_sizes/font_size = 20
+text = "settings"
+
+[node name="Quit" type="TextureButton" parent="MenuOptions" unique_id=2134510576]
+custom_minimum_size = Vector2(149, 52)
+layout_mode = 2
+texture_normal = SubResource("AtlasTexture_topl8")
+stretch_mode = 0
+
+[node name="Label" type="Label" parent="MenuOptions/Quit" unique_id=1173621930]
+layout_mode = 0
+offset_left = 18.0
+offset_top = 28.0
+offset_right = 66.0
+offset_bottom = 54.0
+theme_override_fonts/font = ExtResource("8_thkx5")
+theme_override_font_sizes/font_size = 20
+text = "quit"
 
 [node name="SelectSfx" parent="MenuOptions" unique_id=820039607 instance=ExtResource("4_82nwe")]
 
